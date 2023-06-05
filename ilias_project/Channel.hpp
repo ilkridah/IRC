@@ -31,6 +31,8 @@ class ChannelHandler {
    public:
     ChannelHandler();
 
+    bool is_member(const std::string &channel, const std::string &user);
+
     std::vector<std::string> list_users();
     std::vector<std::string> list_channels();
 

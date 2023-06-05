@@ -1,37 +1,30 @@
 #include <string>
-#include "./Channel.hpp"
+#include "./ChannelCmds.hpp"
 
 using std::string;
 
-bool ChannelsHandler::Joining_Channel(const string& Channelname, const string& user, const string& k)
+void ChannelCmds::Joining_Channel(const string& Channelname, const string& user, const string& key)
 {
-    std::string userkey = k;
-    if (_channels[Channelname]->Invite_only == 1)
+    // std::string userkey = k;
+    Channel& channel = _channel_handler.get_channel(Channelname);
+    if (channel.InviteOnly)
     {
-        if (Chlist[Channelname]->guest.find(user) == Chlist[Channelname]->guest.end())
+        if (_channel_handler.is_invited(Channelname, user) == false)
             throw IRCException::ERR_INVITEONLYCHAN(Channelname);
-        else
-            userkey = Chlist[Channelname]->key;
     }
-    if (is_channel_member(Channelname, user))
+    if (_channel_handler.is_member(Channelname, user))
         throw IRCException::ERR_USERONCHANNEL(Channelname, user);
-    if (Chlist[Channelname]->is_limited) {
-        if (Chlist[Channelname]->users.size() + 1 >
-            Chlist[Channelname]->limit) {
+    if (channel.limit != 0) {
+        if (_channel_handler.get_users(Channelname).second.size() == channel.limit) {
             throw IRCException::ERR_CHANNELISFULL(Channelname);
         }
     }
-    if (Chlist[Channelname]->key == userkey)
-    {
-        Chlist[Channelname]->users.push_back(user);
-        Chlist[Channelname]->admins.insert(Chlist[Channelname]->users[0]);
-    }
-    else
+    if (_channel_handler.add_user(Channelname, user, key) == false) {
         throw IRCException::ERR_BADCHANNELKEY(Channelname);
-    return 1;
+    } 
 }
 
-void ChannelsHandler::Leaving_Channel(const string& Channelname, const string& user)
+void ChannelCmds::Leaving_Channel(const string& Channelname, const string& user)
 {
     check_channel(Channelname, user);
     std::vector<string>::iterator it = std::find(Chlist[Channelname]->users.begin(), Chlist[Channelname]->users.end(), user);
@@ -52,7 +45,7 @@ void ChannelsHandler::Leaving_Channel(const string& Channelname, const string& u
     }
 }
 
-void ChannelsHandler::check_channel(string Channelname, string user)
+void ChannelCmds::check_channel(string Channelname, string user)
 {
     if (is_channel_existing(Channelname) == 0)
         throw IRCException::ERR_NOTONCHANNEL(Channelname);
@@ -60,7 +53,7 @@ void ChannelsHandler::check_channel(string Channelname, string user)
         throw IRCException::ERR_USERSDONTMATCH();
 }
 
-void ChannelsHandler::check_admin(string Channelname, string admin)
+void ChannelCmds::check_admin(string Channelname, string admin)
 {
     if (is_channel_existing(Channelname) == 0)
         throw IRCException::ERR_NOTONCHANNEL(Channelname);
@@ -70,38 +63,52 @@ void ChannelsHandler::check_admin(string Channelname, string admin)
         throw IRCException::ERR_USERSDONTMATCH();
 }
 
-void ChannelsHandler::set_restrictedTopic(string Channelname) 
+void ChannelCmds::set_restrictedTopic(string Channelname) 
 {
     Chlist[Channelname]->restrictedTopic = true;
 }
 
-void ChannelsHandler::remove_restrictedTopic(string Channelname)
+void ChannelCmds::remove_restrictedTopic(string Channelname)
 {
     Chlist[Channelname]->restrictedTopic = false;
 }
 
-bool ChannelsHandler::is_channel_admin(string Channelname, string user) {  // chan exist
+bool ChannelCmds::is_channel_admin(string Channelname, string user) {  // chan exist
     std::set<string>::iterator it = Chlist[Channelname]->admins.find(user);
     if (it != Chlist[Channelname]->admins.end())
         return 1;
     return 0;
 }
 
-void ChannelsHandler::add_channel_admin(string Channelname, string user) {
+void ChannelCmds::add_channel_admin(string Channelname, string user) {
     Chlist[Channelname]->admins.insert(user);
 }
 
-void ChannelsHandler::add_channel_guest(std::string Channelname, std::string user)
+void ChannelCmds::add_channel_guest(std::string Channelname, std::string user)
 {
     Chlist[Channelname]->guest.insert(user);
 }
 
-void ChannelsHandler::remove_channel_admin(string Channelname,
+void ChannelCmds::remove_channel_admin(string Channelname,
                                            string user) {
     std::set<string>::iterator it = Chlist[Channelname]->admins.find(user);
     if (it != Chlist[Channelname]->admins.end())
         Chlist[Channelname]->admins.erase(it);
 }
+
+bool isStringDigits(const string& str) {
+    for (int i = 0; str[i]; i++) {
+        if (!std::isdigit(str[i])) {
+            return false;
+        }
+    }
+    return true;
+}
+
+
+
+
+
 
 bool isStringDigits(const string& str) {
     for (int i = 0; str[i]; i++) {

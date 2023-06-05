@@ -133,3 +133,18 @@ bool ChannelHandler::does_user_exist(std::string const& channel_name) const {
 //     _user_channels[user].push_back(channel_name);
 //     _is_admin[std::make_pair(channel_name, user)] = true;
 // };
+
+
+    bool ChannelHandler::is_member(const std::string &channel, const std::string &user) {
+        std::map<std::string, std::vector<std::string>>::iterator res = _channel_users.find(channel);
+        if (res == _channel_users.end()) {
+            return false;
+        };
+        std::vector<std::string> users = res->second;
+        for(std::vector<std::string>::iterator it = users.begin(); it != users  .end(); ++it) 
+            {
+                if (*it == user)
+                    return true;
+            }
+        return false;
+    }
