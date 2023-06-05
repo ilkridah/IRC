@@ -26,23 +26,22 @@ void ChannelCmds::Joining_Channel(const string& Channelname, const string& user,
 
 void ChannelCmds::Leaving_Channel(const string& Channelname, const string& user)
 {
-    check_channel(Channelname, user);
-    std::vector<string>::iterator it = std::find(Chlist[Channelname]->users.begin(), Chlist[Channelname]->users.end(), user);
-    if (it != Chlist[Channelname]->users.end())
-        Chlist[Channelname]->users.erase(it);
-    if (is_channel_admin(Channelname, user))
-    {
-        std::set<string>::iterator iter = Chlist[Channelname]->admins.find(user);
-        if (iter != Chlist[Channelname]->admins.end())
-            Chlist[Channelname]->admins.erase(iter);
-        if (Chlist[Channelname]->admins.size()== 0 && Chlist[Channelname]->users.size() != 0)
-             Chlist[Channelname]->admins.insert(Chlist[Channelname]->users[0]);
-    }
-    if (Chlist[Channelname]->users.size() == 0)
-    {
-        delete Chlist[Channelname];
-        Chlist.erase(Channelname);
-    }
+    // check_channel(Channelname, user);
+   if( _channel_handler.does_channel_exist(Channelname))
+        throw IRCException::ERR_NOSUCHCHANNEL(Channelname);
+    // std::vector<string>::iterator it = std::find(Chlist[Channelname]->users.begin(), Chlist[Channelname]->users.end(), user);
+    if (_channel_handler.is_member(Channelname, user))
+        throw IRCException::ERR_NOTONCHANNEL(Channelname);
+    else
+        _channel_handler.remove_user(Channelname, user);
+    // if (is_channel_admin(Channelname, user))
+    // {
+    //     std::set<string>::iterator iter = Chlist[Channelname]->admins.find(user);
+    //     if (iter != Chlist[Channelname]->admins.end())
+    //         Chlist[Channelname]->admins.erase(iter);
+    //     if (Chlist[Channelname]->admins.size()== 0 && Chlist[Channelname]->users.size() != 0)
+    //          Chlist[Channelname]->admins.insert(Chlist[Channelname]->users[0]);
+    // }
 }
 
 void ChannelCmds::check_channel(string Channelname, string user)
