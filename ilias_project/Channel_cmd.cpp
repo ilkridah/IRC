@@ -44,70 +44,56 @@ void ChannelCmds::Leaving_Channel(const string& Channelname, const string& user)
     // }
 }
 
-void ChannelCmds::check_channel(string Channelname, string user)
-{
-    if (is_channel_existing(Channelname) == 0)
-        throw IRCException::ERR_NOTONCHANNEL(Channelname);
-    if (is_channel_member(Channelname, user) == 0)
-        throw IRCException::ERR_USERSDONTMATCH();
-}
+// void ChannelCmds::check_channel(string Channelname, string user)
+// {
+//     if (is_channel_existing(Channelname) == 0)
+//         throw IRCException::ERR_NOTONCHANNEL(Channelname);
+//     if (is_channel_member(Channelname, user) == 0)
+//         throw IRCException::ERR_USERSDONTMATCH();
+// }
 
-void ChannelCmds::check_admin(string Channelname, string admin)
-{
-    if (is_channel_existing(Channelname) == 0)
-        throw IRCException::ERR_NOTONCHANNEL(Channelname);
-    if (is_channel_member(Channelname, admin) == 0)
-        throw IRCException::ERR_USERSDONTMATCH();
-    if (is_channel_admin(Channelname, admin) == 0)
-        throw IRCException::ERR_USERSDONTMATCH();
-}
+// void ChannelCmds::check_admin(string Channelname, string admin)
+// {
+//     if (is_channel_existing(Channelname) == 0)
+//         throw IRCException::ERR_NOTONCHANNEL(Channelname);
+//     if (is_channel_member(Channelname, admin) == 0)
+//         throw IRCException::ERR_USERSDONTMATCH();
+//     if (is_channel_admin(Channelname, admin) == 0)
+//         throw IRCException::ERR_USERSDONTMATCH();
+// }
 
-void ChannelCmds::set_restrictedTopic(string Channelname) 
-{
-    Chlist[Channelname]->restrictedTopic = true;
-}
+// void ChannelCmds::set_restrictedTopic(string Channelname) 
+// {
+//     Chlist[Channelname]->restrictedTopic = true;
+// }
 
-void ChannelCmds::remove_restrictedTopic(string Channelname)
-{
-    Chlist[Channelname]->restrictedTopic = false;
-}
+// void ChannelCmds::remove_restrictedTopic(string Channelname)
+// {
+//     Chlist[Channelname]->restrictedTopic = false;
+// }
 
-bool ChannelCmds::is_channel_admin(string Channelname, string user) {  // chan exist
-    std::set<string>::iterator it = Chlist[Channelname]->admins.find(user);
-    if (it != Chlist[Channelname]->admins.end())
-        return 1;
-    return 0;
-}
+// bool ChannelCmds::is_channel_admin(string Channelname, string user) {  // chan exist
+//     std::set<string>::iterator it = Chlist[Channelname]->admins.find(user);
+//     if (it != Chlist[Channelname]->admins.end())
+//         return 1;
+//     return 0;
+// }
 
-void ChannelCmds::add_channel_admin(string Channelname, string user) {
-    Chlist[Channelname]->admins.insert(user);
-}
+// void ChannelCmds::add_channel_admin(string Channelname, string user) {
+//     Chlist[Channelname]->admins.insert(user);
+// }
 
-void ChannelCmds::add_channel_guest(std::string Channelname, std::string user)
-{
-    Chlist[Channelname]->guest.insert(user);
-}
+// void ChannelCmds::add_channel_guest(std::string Channelname, std::string user)
+// {
+//     Chlist[Channelname]->guest.insert(user);
+// }
 
-void ChannelCmds::remove_channel_admin(string Channelname,
-                                           string user) {
-    std::set<string>::iterator it = Chlist[Channelname]->admins.find(user);
-    if (it != Chlist[Channelname]->admins.end())
-        Chlist[Channelname]->admins.erase(it);
-}
-
-bool isStringDigits(const string& str) {
-    for (int i = 0; str[i]; i++) {
-        if (!std::isdigit(str[i])) {
-            return false;
-        }
-    }
-    return true;
-}
-
-
-
-
-
+// void ChannelCmds::remove_channel_admin(string Channelname,
+//                                            string user) {
+//     std::set<string>::iterator it = Chlist[Channelname]->admins.find(user);
+//     if (it != Chlist[Channelname]->admins.end())
+//         Chlist[Channelname]->admins.erase(it);
+// }
 
 bool isStringDigits(const string& str) {
     for (int i = 0; str[i]; i++) {

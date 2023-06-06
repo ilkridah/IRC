@@ -22,15 +22,16 @@ struct Channel {
 
 class ChannelHandler {
    private:
+
     std::map<std::string, Channel> _channels;
     std::map<std::string, std::vector<std::string> > _user_channels;
     std::map<std::string, std::vector<std::string> > _channel_users;
     std::map<std::pair<std::string, std::string>, bool> _is_admin;
     std::map<std::pair<std::string, std::string>, bool> _is_invited;
 
-   public:
+   public: 
     ChannelHandler();
-
+    // Channel  Channel(std::string const& channel_name, std::string const& password);
     bool is_member(const std::string &channel, const std::string &user);
 
     std::vector<std::string> list_users();

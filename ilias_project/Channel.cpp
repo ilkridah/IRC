@@ -38,15 +38,24 @@ std::pair<bool, std::vector<std::string> const&> ChannelHandler::get_channels(
 };
 
 bool ChannelHandler::add_user(std::string const& channel_name,
-                             std::string const& user_name,
-                             std::string const& password) {
+                              std::string const& user_name,
+                              std::string const& password) {
+                                
+    std::map<std::string, Channel>::iterator it = _channels.find(channel_name);
     if (this->does_channel_exist(channel_name) == false) {
-        _channels[channel_name] = Channel(channel_name, password);
+        ////
+        if (it != _channels.end())
+            it->second = Channel(channel_name, password);
+        else
+            _channels.insert(
+                std::make_pair(channel_name, Channel(channel_name, password)));
+        // _channels[channel_name] = Channel(channel_name, password);
         this->_channel_users[channel_name].push_back(user_name);
         this->_user_channels[user_name].push_back(channel_name);
         this->_is_admin[std::make_pair(channel_name, user_name)] = true;
         return true;
-    } else if (_channels[channel_name].password != password) {
+        // } else if (_channels[channel_name].password != password) {
+    } else if (it->second.password != password) {
         return false;
     }
     this->_channel_users[channel_name].push_back(user_name);
@@ -134,17 +143,18 @@ bool ChannelHandler::does_user_exist(std::string const& channel_name) const {
 //     _is_admin[std::make_pair(channel_name, user)] = true;
 // };
 
-
-    bool ChannelHandler::is_member(const std::string &channel, const std::string &user) {
-        std::map<std::string, std::vector<std::string>>::iterator res = _channel_users.find(channel);
-        if (res == _channel_users.end()) {
-            return false;
-        };
-        std::vector<std::string> users = res->second;
-        for(std::vector<std::string>::iterator it = users.begin(); it != users  .end(); ++it) 
-            {
-                if (*it == user)
-                    return true;
-            }
+bool ChannelHandler::is_member(const std::string& channel,
+                               const std::string& user) {
+    std::map<std::string, std::vector<std::string> >::iterator res =
+        _channel_users.find(channel);
+    if (res == _channel_users.end()) {
         return false;
+    };
+    std::vector<std::string> users = res->second;
+    for (std::vector<std::string>::iterator it = users.begin();
+         it != users.end(); ++it) {
+        if (*it == user)
+            return true;
     }
+    return false;
+}

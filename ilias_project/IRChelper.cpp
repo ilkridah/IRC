@@ -43,7 +43,6 @@ void IRC::mode(std::vector<std::string> args, Client& client) {
 }
 
 void IRC::join(Client& client, const Parser::Command& cmd) {
-    // std::string _key = cmd.args.size() == 2 ? cmd.args[1] : "";
     if (cmd.args[0] == "0") {
         channels.remove_user(client.get_nick());
         std::vector<std::string> mychannels = client.get_myChannsList();
@@ -122,7 +121,8 @@ void IRC::quit(Client& client) {
 // }
 
 void IRC::invite(const Parser::Command& cmd, Client& client) {
-    channels.is_admin(cmd.args[1], client.get_nick());
+    // channels.is_admin(cmd.args[1], client.get_nick());
+    
     std::map<std::string, Client*>::iterator it =
         _nickname_pool.find(cmd.args[0]);
     if (it != _nickname_pool.end()) {
