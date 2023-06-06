@@ -56,14 +56,14 @@ void IRC::join(Client& client, const Parser::Command& cmd) {
     }
     for (size_t i = 0; i < cmd.chan_key.size(); i++) {
         channels.add_user(cmd.args[0], client.get_nick(), cmd.chan_key[i].second) ;
-            if (!channels.get_topic(cmd.chan_key[i].first).empty())
+            if (!channels.gimmi_topic(cmd.chan_key[i].first).empty())
                 IRCReplay::RPL_TOPIC(
                     client, channels.get_channel(cmd.chan_key[i].first));
             IRCReplay::RPL_NAMREPLY(client, cmd.chan_key[i].first, channels);
             client.add_myChannsList(cmd.chan_key[i].first);
         }
     }
-}
+
 
 void IRC::privMessage(Client& client, const Parser::Command& cmd) {
     std::string msg = cmd.args.back();
@@ -135,36 +135,38 @@ void IRC::invite(const Parser::Command& cmd, Client& client) {
             client.get_local_host() + " INVITE " + cmd.args[0] + " " +
             cmd.args[1] + "\r\n");
         IRCReplay::RPL_INVITING(client, cmd.args[1], cmd.args[0]);
-        channels.add_channel_guest(cmd.args[1], cmd.args[0]);
+        // channels.add_channel_guest(cmd.args[1], cmd.args[0]);
+        channels.set_is_invited(cmd.args[1], cmd.args[0], true);
     } else
         throw IRCException::ERR_NOSUCHNICK(cmd.args[0]);
 }
 
-void IRC::kick(const Parser::Command& cmd, Client& client) {
-    std::string reason = client.get_nick();
-    if (cmd.args.size() == 3)
-        reason = cmd.args[2];
-    for (size_t i = 0; i < cmd.chan_key.size(); i++) {
-        channels.check_admin(cmd.chan_key[i].first, client.get_nick());
-        channels.Leaving_Channel(
-            cmd.chan_key[i].first,
-            _nickname_pool[cmd.chan_key[i].second]->get_nick());
-        _nickname_pool[cmd.chan_key[i].second]->remove_channel(
-            cmd.chan_key[i].first);
-        ft_send(*_nickname_pool[cmd.chan_key[i].second],
-                ":" + client.get_nick() + "!" + client.get_user() + "@" +
-                    client.get_local_host() + " KICK " + cmd.chan_key[i].first +
-                    " " + cmd.chan_key[i].second + " :" + reason + "\r\n");
-        std::vector<std::string> userList =
-            this->channels.get_Users(cmd.chan_key[i].first);
-        for (size_t j = 0; j < userList.size(); j++)
-            ft_send(*_nickname_pool[userList[j]],
-                    ":" + client.get_nick() + "!" + client.get_user() + "@" +
-                        client.get_local_host() + " KICK " +
-                        cmd.chan_key[i].first + " " + cmd.chan_key[i].second +
-                        " :" + reason + "\r\n");
-    }
-}
+// void IRC::kick(const Parser::Command& cmd, Client& client) {
+//     std::string reason = client.get_nick();
+//     if (cmd.args.size() == 3)
+//         reason = cmd.args[2];
+//     // for (size_t i = 0; i < cmd.chan_key.size(); i++) {
+//         // channels.check_admin(cmd.chan_key[i].first, client.get_nick());
+//         channels.is_admin(cmd.args[0], client.get_nick());
+//         channels.Leaving_Channel(
+//             cmd.chan_key[i].first,
+//             _nickname_pool[cmd.chan_key[i].second]->get_nick());
+//         _nickname_pool[cmd.chan_key[i].second]->remove_channel(
+//             cmd.chan_key[i].first);
+//         ft_send(*_nickname_pool[cmd.chan_key[i].second],
+//                 ":" + client.get_nick() + "!" + client.get_user() + "@" +
+//                     client.get_local_host() + " KICK " + cmd.chan_key[i].first +
+//                     " " + cmd.chan_key[i].second + " :" + reason + "\r\n");
+//         std::vector<std::string> userList =
+//             this->channels.get_Users(cmd.chan_key[i].first);
+//         for (size_t j = 0; j < userList.size(); j++)
+//             ft_send(*_nickname_pool[userList[j]],
+//                     ":" + client.get_nick() + "!" + client.get_user() + "@" +
+//                         client.get_local_host() + " KICK " +
+//                         cmd.chan_key[i].first + " " + cmd.chan_key[i].second +
+//                         " :" + reason + "\r\n");
+//     }
+// }
 
 void ft_send(Client& client, std::vector<std::string> msg) {
     for (size_t i = 0; i < msg.size(); i++)

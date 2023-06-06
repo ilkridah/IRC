@@ -82,4 +82,6 @@ class ChannelHandler {
 
     bool set_res_topic(std::string const& channel_name);
     void unset_res_topic(std::string const& channel_name);
+
+    std::string gimmi_topic(std::string const& channel_name);
 };

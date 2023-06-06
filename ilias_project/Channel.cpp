@@ -97,6 +97,17 @@ bool ChannelHandler::set_is_admin(std::string channel,
     return _is_admin[std::make_pair(channel, user)] = admin;
 }
 
+bool ChannelHandler::is_invited(std::string channel, std::string user) {
+    return _is_invited[std::make_pair(channel, user)];
+}
+
+bool ChannelHandler::set_is_invited(std::string channel,
+                                    std::string user,
+                                    bool invited) {
+    return _is_invited[std::make_pair(channel, user)] = invited;
+}
+
+
 std::vector<std::string> ChannelHandler::list_users() {
     std::vector<std::string> users;
     for (std::map<std::string, std::vector<std::string> >::iterator it =
@@ -218,4 +229,12 @@ void ChannelHandler::unset_res_topic(std::string const& channel_name)
     if (it != _channels.end())
         it->second.rest_topic = false;
 
+}
+
+std::string ChannelHandler::gimmi_topic(std::string const& channel_name)
+{
+    std::map<std::string, Channel>::iterator it = _channels.find(channel_name);
+    if (it != _channels.end())
+        return it->second.topic;
+    return "";
 }
