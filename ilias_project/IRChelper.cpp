@@ -16,29 +16,33 @@
 
 void IRC::mode(std::vector<std::string> args, Client& client) {
     std::string admin = client.get_nick();
-    channels.check_admin(args[0], admin);
+    if (channels.is_admin(args[0], admin)){
     if (args[1] == "+o" && args.size() == 3)
-        channels.add_channel_admin(args[0], args[2]);
+        channels.set_is_admin(args[0], args[2], true);
     else if (args[1] == "-o" && args.size() == 3)
-        channels.remove_channel_admin(args[0], args[2]);
+        channels.set_is_admin(args[0], args[2],false);
     else if (args[1] == "+k" && args.size() == 3) {
-        channels.set_key(args[2], args[0]);
+        channels.set_key(args[0], args[2]);
     } else if (args[1] == "-k" && args.size() == 2)
-        channels.remove_key(args[0]);
+        channels.set_key(args[0],"");
     else if (args[1] == "+i" && args.size() == 2)
-        channels.set_Invite_only(args[0]);
+        channels.set_invite(args[0]);
     else if (args[1] == "-i" && args.size() == 2)
-        channels.remove_Invite_only(args[0]);
-    else if (args[1] == "+l" && args.size() == 3)
-        channels.set_limit(args[0], args[2]);
+        channels.unset_invite(args[0]);
+    else if (args[1] == "+l" && args.size() == 3){
+        if (!channels.set_limit(args[0], args[2]))
+            throw::IRCException::ERR_UNKNOWNMODE(args[1]);
+    }
     else if (args[1] == "-l" && args.size() == 2)
-        channels.remove_limit(args[0]);
+        channels.unset_limit(args[0]);
     else if (args[1] == "+t" && args.size() == 2)
-        channels.set_restrictedTopic(args[0]);
+        channels.set_res_topic(args[0]);
     else if (args[1] == "-t" && args.size() == 2)
-        channels.remove_restrictedTopic(args[0]);
+        channels.unset_res_topic(args[0]);
     else
-        throw IRCException::ERR_UNKNOWNMODE(args[1]);
+        throw IRCException::ERR_UNKNOWNMODE(args[1]);}
+    else 
+        throw IRCException::ERR_CHANOPRIVSNEEDED(args[0]);
     ft_send(client, IRCReplay::RPL_mode(args[1], args[0]));
 }
 

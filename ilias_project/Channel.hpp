@@ -5,6 +5,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <sstream>
 
 struct Channel {
     std::string name;
@@ -12,12 +13,14 @@ struct Channel {
     std::string topic;
     bool InviteOnly;
     size_t limit;
+    bool rest_topic;
     Channel(std::string const& channel_name, std::string const& password)
         : name(channel_name),
           password(password),
           topic(""),
           InviteOnly(false),
-          limit(0) {}
+          limit(0),
+          rest_topic(false) {}
 };
 
 class ChannelHandler {
@@ -69,4 +72,14 @@ class ChannelHandler {
                        const std::string& user,
                        std::string& password);
     void get_key(std::string const& channel_name, std::string const& key);
+    void set_key(std::string const& channel_name, std::string const& key);
+
+    void set_invite(std::string const& channel_name);
+    void unset_invite(std::string const& channel_name);
+
+    bool set_limit(std::string const& channel_name, std::string const& limit);
+    void unset_limit(std::string const& channel_name);
+
+    bool set_res_topic(std::string const& channel_name);
+    void unset_res_topic(std::string const& channel_name);
 };

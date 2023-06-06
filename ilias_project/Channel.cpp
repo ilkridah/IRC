@@ -158,3 +158,64 @@ bool ChannelHandler::is_member(const std::string& channel,
     }
     return false;
 }
+
+void ChannelHandler::set_key(std::string const& channel_name,std::string const& key)
+{
+    std::map<std::string, Channel>::iterator it = _channels.find(channel_name);
+    if (it != _channels.end())
+        it->second.password = key;
+}
+
+void ChannelHandler::set_invite(std::string const& channel_name)
+{
+    std::map<std::string ,Channel>::iterator it = _channels.find(channel_name);
+    if(it != _channels.end())
+        it->second.InviteOnly = true;
+}
+void ChannelHandler::unset_invite(std::string const& channel_name)
+{
+    std::map<std::string ,Channel>::iterator it = _channels.find(channel_name);
+    if(it != _channels.end())
+        it->second.InviteOnly = false;
+}
+bool ChannelHandler::set_limit(std::string const& channel_name, std::string const& limit)
+{
+    std::map<std::string ,Channel>::iterator it = _channels.find(channel_name);
+    if(it != _channels.end())
+    {
+        if (limit.find_first_not_of("0123456789") == std::string::npos)
+        {
+            std::stringstream ss;
+            ss << limit;
+            ss >> it->second.limit;
+            return true;
+        }
+    }
+    return false;
+}
+
+void ChannelHandler::unset_limit(std::string const& channel_name)
+{
+    std::map<std::string ,Channel>::iterator it = _channels.find(channel_name);
+    if (it != _channels.end())
+        it->second.limit = 0;
+        //should we throw an exception if channel didnt exist?
+}
+
+bool ChannelHandler::set_res_topic(std::string const& channel_name)
+{
+    std::map<std::string, Channel>::iterator it = _channels.find(channel_name);
+    if (it != _channels.end())
+    {
+        it->second.rest_topic = true;
+        return true;
+    }
+    return false;
+}
+void ChannelHandler::unset_res_topic(std::string const& channel_name)
+{
+    std::map<std::string, Channel>::iterator it = _channels.find(channel_name);
+    if (it != _channels.end())
+        it->second.rest_topic = false;
+
+}
