@@ -15,8 +15,8 @@ void RPL_TOPIC(Client& client, Channel const& channel) {
                         " :" + channel.topic + "\r\n");
 }
 
-void RPL_NOTOPIC(Client& client, const Channel* channel) {
-    ft_send(client, channel->name +
+void RPL_NOTOPIC(Client& client, const Channel channel) {
+    ft_send(client, channel.name +
                         ":"
                         " No topic is set\r\n");
 }

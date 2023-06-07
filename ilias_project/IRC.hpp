@@ -43,7 +43,7 @@ class IRC {
     void join(Client& client, const Parser::Command& cmd);
     void privMessage(Client& client, const Parser::Command& cmd);
     void topic(Client& client, const Parser::Command& cmd);
-    void part(std::vector<std::string> mychannel, Client& client);
+    void part(std::string const& channelName, Client& client);
     void invite(const Parser::Command& cmd, Client& client);
     void kick(const Parser::Command& cmd, Client& client);
 };

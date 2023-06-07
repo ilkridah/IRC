@@ -6,6 +6,7 @@
 #include <exception>
 #include <stdexcept>
 #include <string>
+#include <vector>
 #include "Channel.hpp"
 #include "IRC.hpp"
 #include "IRCExecptions.hpp"
@@ -49,10 +50,10 @@ void IRC::mode(std::vector<std::string> args, Client& client) {
 void IRC::join(Client& client, const Parser::Command& cmd) {
     if (cmd.args[0] == "0") {
         channels.remove_user(client.get_nick());
-        std::vector<std::string> mychannels = client.get_myChannsList();
-        for (size_t i = 0; i < mychannels.size(); i++)
-            part(mychannels, client);
-        return;
+        // std::vector<std::string> mychannels = client.get_myChannsList();
+        // for (size_t i = 0; i < mychannels.size(); i++)
+        //     part(mychannels, client);
+        // return;
     }
     for (size_t i = 0; i < cmd.chan_key.size(); i++) {
         channels.add_user(cmd.args[0], client.get_nick(), cmd.chan_key[i].second) ;
@@ -104,25 +105,31 @@ void IRC::quit(Client& client) {
     delete &client;
 }
 
-// void IRC::topic(Client& client, const Parser::Command& cmd) {
-//     if (!channels.is_channel_existing(cmd.args[0]))
-//         throw IRCException::ERR_NOTONCHANNEL(cmd.args[0]);
-//     if (cmd.args.size() > 1)
-//         channels.set_topic(cmd.args[1], cmd.args[0], client.get_nick());
-//     if (channels.get_topic(cmd.args[0]).empty())
-//         IRCReplay::RPL_NOTOPIC(client, channels.get_Channel(cmd.args[0]));
-//     else
-//         IRCReplay::RPL_TOPIC(client, channels.get_Channel(cmd.args[0]));
-// }
+void IRC::topic(Client& client, const Parser::Command& cmd) {
+    if (!channels.does_channel_exist(cmd.args[0]))
+        throw IRCException::ERR_NOTONCHANNEL(cmd.args[0]);
+    if (cmd.args.size() > 1)
+        channels.set_topic(cmd.args[1], cmd.args[0]);
+    if (channels.gimmi_topic(cmd.args[0]).empty())
+        IRCReplay::RPL_NOTOPIC(client, channels.get_channel(cmd.args[0]));
+    else
+        IRCReplay::RPL_TOPIC(client, channels.get_channel(cmd.args[0]));
+}
 
-// void IRC::part(std::vector<std::string> mychannel, Client& client) {
-//     std::vector<std::string>::iterator it = mychannel.begin();
-//     while (it != mychannel.end()) {
-//         channels.Leaving_Channel(*it, client.get_nick());
-//         client.remove_channel(*it);
-//         it++;
-//     }
-// }
+void IRC::part(std::string const& mychannel, Client& client) {
+    std::vector<std::string> chans = spliter(mychannel, ',');
+    std::vector<std::string>::iterator it = chans.begin();
+    for(; it != chans.end(); it++) {
+        channels.remove_user(*it, client.get_nick());
+
+    }
+    // std::vector<std::string>::iterator it = mychannel.begin();
+    // while (it != mychannel.end()) {
+        // channels.Leaving_Channel(*it, client.get_nick());
+        // client.remove_channel(*it);
+        // it++;
+    // }
+}
 
 void IRC::invite(const Parser::Command& cmd, Client& client) {
     // channels.is_admin(cmd.args[1], client.get_nick());
@@ -145,9 +152,9 @@ void IRC::invite(const Parser::Command& cmd, Client& client) {
 //     std::string reason = client.get_nick();
 //     if (cmd.args.size() == 3)
 //         reason = cmd.args[2];
-//     // for (size_t i = 0; i < cmd.chan_key.size(); i++) {
+//     for (size_t i = 0; i < cmd.chan_key.size(); i++) {
 //         // channels.check_admin(cmd.chan_key[i].first, client.get_nick());
-//         channels.is_admin(cmd.args[0], client.get_nick());
+//         channels.is_admin(cmd.chan_key[i].first, client.get_nick());
 //         channels.Leaving_Channel(
 //             cmd.chan_key[i].first,
 //             _nickname_pool[cmd.chan_key[i].second]->get_nick());

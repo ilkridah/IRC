@@ -238,3 +238,14 @@ std::string ChannelHandler::gimmi_topic(std::string const& channel_name)
         return it->second.topic;
     return "";
 }
+
+std::string ChannelHandler::set_topic(std::string const& channel_name, std::string const& topic)
+{
+    std::map<std::string, Channel>::iterator it = _channels.find(channel_name);
+    if (it != _channels.end())
+    {
+        it->second.topic = topic;
+        return topic;
+    }
+    return "";
+}
