@@ -44,7 +44,7 @@ void IRC::mode(std::vector<std::string> args, Client& client) {
         throw IRCException::ERR_UNKNOWNMODE(args[1]);}
     else 
         throw IRCException::ERR_CHANOPRIVSNEEDED(args[0]);
-    ft_send(client, IRCReplay::RPL_mode(args[1], args[0]));
+    client.send( IRCReplay::RPL_mode(args[1], args[0]));
 }
 
 void IRC::join(Client& client, const Parser::Command& cmd) {
@@ -57,11 +57,14 @@ void IRC::join(Client& client, const Parser::Command& cmd) {
     }
     for (size_t i = 0; i < cmd.chan_key.size(); i++) {
         channels.add_user(cmd.args[0], client.get_nick(), cmd.chan_key[i].second) ;
+        std::cout <<"dazt mn hna"<<std::endl;
             if (!channels.gimmi_topic(cmd.chan_key[i].first).empty())
                 IRCReplay::RPL_TOPIC(
                     client, channels.get_channel(cmd.chan_key[i].first));
-            IRCReplay::RPL_NAMREPLY(client, cmd.chan_key[i].first, channels);
             client.add_myChannsList(cmd.chan_key[i].first);
+        std::cout <<"dazt mn hna2"<<std::endl;
+            IRCReplay::RPL_NAMREPLY(client, cmd.chan_key[i].first, channels);
+        std::cout <<"dazt mn hna3"<<std::endl;
         }
     }
 
@@ -174,9 +177,3 @@ void IRC::invite(const Parser::Command& cmd, Client& client) {
 //                         " :" + reason + "\r\n");
 //     }
 // }
-
-void ft_send(Client& client, std::vector<std::string> msg) {
-    for (size_t i = 0; i < msg.size(); i++)
-        client.send(msg[i] + " ");
-    client.send("\n");
-}

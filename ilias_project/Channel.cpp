@@ -4,6 +4,8 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include "IRCExecptions.hpp"
+#include <iostream>
 
 ChannelHandler::ChannelHandler() : _user_channels(), _channel_users(){};
 
@@ -17,13 +19,23 @@ ChannelHandler::get_channels() {
     return _channel_users;
 }
 
+Channel& ChannelHandler::get_channel(std::string const& channel_name)
+{
+    std::map<std::string ,Channel>::iterator it = _channels.find(channel_name);
+    if (it == _channels.end())
+        throw IRCException::ERR_NOSUCHCHANNEL(channel_name);
+    return it->second;//what should we do?
+}
+
 std::pair<bool, std::vector<std::string> const&> ChannelHandler::get_users(
     std::string const& channel_name) {
     std::map<std::string, std::vector<std::string> >::iterator users_iter =
         this->_channel_users.find(channel_name);
-
-    if (users_iter == this->_channel_users.end())
-        return std::make_pair(false, std::vector<std::string>());
+    std::cout << "hnaya lmouchkil?" <<std::endl;
+    if (users_iter == this->_channel_users.end()){ 
+    std::cout << "hnaya lmouchkil?2" <<std::endl;
+        return std::make_pair(false, std::vector<std::string>());}
+    std::cout << "hnaya lmouchkil?23" <<std::endl;
     return std::make_pair(true, users_iter->second);
 };
 

@@ -4,7 +4,7 @@
 #include <set>
 #include <string>
 #include <vector>
-#include "./Channel.hpp"
+#include "Channel.hpp"
 #include "Parser.hpp"
 #include "socket/Client.hpp"
 #include "socket/Poll.hpp"
@@ -48,7 +48,5 @@ class IRC {
     void kick(const Parser::Command& cmd, Client& client);
 };
 
-void ft_send(Client& client, const std::string msg);
-void ft_send(Client& client, const std::vector<std::string> msg);
 std::string api_res(std::string str);
 #endif
