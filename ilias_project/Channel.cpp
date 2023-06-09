@@ -54,10 +54,9 @@ bool ChannelHandler::add_user(std::string const& channel_name,
                               std::string const& user_name,
                               std::string const& password) {                     
    
-    std::map<std::string, Channel>::iterator it;
+    _channels.insert(std::make_pair(channel_name, Channel(channel_name, password)));
+    std::map<std::string, Channel>::iterator it = _channels.find(channel_name);
     if(this->does_channel_exist(channel_name) == true){
-        _channels.insert(std::make_pair(channel_name, Channel(channel_name, password)));
-            it = _channels.find(channel_name);
                 this->_channel_users[channel_name].push_back(user_name);
                 this->_user_channels[user_name].push_back(channel_name);
                 this->_is_admin[std::make_pair(channel_name, user_name)] = true;
