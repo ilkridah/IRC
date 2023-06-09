@@ -1,14 +1,13 @@
 #include "Channel.hpp"
 #include <algorithm>
 #include <cstdio>
+#include <iostream>
 #include <map>
 #include <string>
 #include <utility>
 #include <vector>
 #include "IRCExecptions.hpp"
 #include "socket/Client.hpp"
-#include <iostream>
-
 
 ChannelHandler::ChannelHandler() : _user_channels(), _channel_users(){};
 
@@ -22,20 +21,20 @@ ChannelHandler::get_channels() {
     return _channel_users;
 }
 
-Channel& ChannelHandler::get_channel(std::string const& channel_name)
-{
-    std::map<std::string ,Channel>::iterator it = _channels.find(channel_name);
+Channel& ChannelHandler::get_channel(std::string const& channel_name) {
+    std::map<std::string, Channel>::iterator it = _channels.find(channel_name);
     if (it == _channels.end())
         throw IRCException::ERR_NOSUCHCHANNEL(channel_name);
-    return it->second;//what should we do?
+    return it->second;  // what should we do?
 }
 
 std::pair<bool, std::vector<std::string> > ChannelHandler::get_users(
     std::string const& channel_name) {
     std::map<std::string, std::vector<std::string> >::iterator users_iter =
         this->_channel_users.find(channel_name);
-    if (users_iter == this->_channel_users.end()){ 
-        return std::make_pair(false, std::vector<std::string>());}
+    if (users_iter == this->_channel_users.end()) {
+        return std::make_pair(false, std::vector<std::string>());
+    }
     puts("channel handler get users");
     return std::make_pair(true, users_iter->second);
 };
@@ -52,34 +51,45 @@ std::pair<bool, std::vector<std::string> const&> ChannelHandler::get_channels(
 
 bool ChannelHandler::add_user(std::string const& channel_name,
                               std::string const& user_name,
-                              std::string const& password) {                     
-   
-    _channels.insert(std::make_pair(channel_name, Channel(channel_name, password)));
+                              std::string const& password) {
+    _channels.insert(
+        std::make_pair(channel_name, Channel(channel_name, password)));
     std::map<std::string, Channel>::iterator it = _channels.find(channel_name);
-    if(this->does_channel_exist(channel_name) == true){
-                this->_channel_users[channel_name].push_back(user_name);
-                this->_user_channels[user_name].push_back(channel_name);
-                this->_is_admin[std::make_pair(channel_name, user_name)] = true;
-                return true;
+    if (this->does_channel_exist(channel_name) == true) {
+        this->_channel_users[channel_name].push_back(user_name);
+        this->_user_channels[user_name].push_back(channel_name);
+        this->_is_admin[std::make_pair(channel_name, user_name)] = true;
+        return true;
     }
-    _channels.insert(std::make_pair(channel_name, Channel(channel_name, password)));
+    _channels.insert(
+        std::make_pair(channel_name, Channel(channel_name, password)));
     puts(it->second.password.c_str());
-    if(it->second.password != password)
+    if (it->second.password != password)
         throw IRCException::ERR_BADCHANNELKEY(channel_name);
-    else{
-        if (is_member(channel_name, user_name) == true) 
+    else {
+        _channels.insert(
+            std::make_pair(channel_name, Channel(channel_name, password)));
+        if (is_member(channel_name, user_name) == true)
             throw IRCException::ERR_USERONCHANNEL(user_name, channel_name);
-
         else if (this->does_channel_exist(channel_name) == false) {
-                this->_channel_users[channel_name].push_back(user_name);
-                this->_user_channels[user_name].push_back(channel_name);
-                this->_is_admin[std::make_pair(channel_name, user_name)] = false;
-                return true;
+            if (it->second.limit != 0) {
+                if (_channel_users[channel_name].size() + 1 > it->second.limit)
+                    throw IRCException::ERR_CHANNELISFULL(channel_name);
+                else {
+                    this->_channel_users[channel_name].push_back(user_name);
+                    this->_user_channels[user_name].push_back(channel_name);
+                    this->_is_admin[std::make_pair(channel_name, user_name)] =
+                        false;
+                    return true;
+                }
             }
+            this->_channel_users[channel_name].push_back(user_name);
+            this->_user_channels[user_name].push_back(channel_name);
+            this->_is_admin[std::make_pair(channel_name, user_name)] = false;
+            return true;
+        }
     }
-    return true;
 };
-
 
 void ChannelHandler::remove_user(std::string const& channel,
                                  std::string const& user) {
@@ -123,7 +133,6 @@ bool ChannelHandler::set_is_invited(std::string channel,
                                     bool invited) {
     return _is_invited[std::make_pair(channel, user)] = invited;
 }
-
 
 std::vector<std::string> ChannelHandler::list_users() {
     std::vector<std::string> users;
@@ -187,32 +196,28 @@ bool ChannelHandler::is_member(const std::string& channel,
     return false;
 }
 
-void ChannelHandler::set_key(std::string const& channel_name,std::string const& key)
-{
+void ChannelHandler::set_key(std::string const& channel_name,
+                             std::string const& key) {
     std::map<std::string, Channel>::iterator it = _channels.find(channel_name);
     if (it != _channels.end())
         it->second.password = key;
 }
 
-void ChannelHandler::set_invite(std::string const& channel_name)
-{
-    std::map<std::string ,Channel>::iterator it = _channels.find(channel_name);
-    if(it != _channels.end())
+void ChannelHandler::set_invite(std::string const& channel_name) {
+    std::map<std::string, Channel>::iterator it = _channels.find(channel_name);
+    if (it != _channels.end())
         it->second.InviteOnly = true;
 }
-void ChannelHandler::unset_invite(std::string const& channel_name)
-{
-    std::map<std::string ,Channel>::iterator it = _channels.find(channel_name);
-    if(it != _channels.end())
+void ChannelHandler::unset_invite(std::string const& channel_name) {
+    std::map<std::string, Channel>::iterator it = _channels.find(channel_name);
+    if (it != _channels.end())
         it->second.InviteOnly = false;
 }
-bool ChannelHandler::set_limit(std::string const& channel_name, std::string const& limit)
-{
-    std::map<std::string ,Channel>::iterator it = _channels.find(channel_name);
-    if(it != _channels.end())
-    {
-        if (limit.find_first_not_of("0123456789") == std::string::npos)
-        {
+bool ChannelHandler::set_limit(std::string const& channel_name,
+                               std::string const& limit) {
+    std::map<std::string, Channel>::iterator it = _channels.find(channel_name);
+    if (it != _channels.end()) {
+        if (limit.find_first_not_of("0123456789") == std::string::npos) {
             std::stringstream ss;
             ss << limit;
             ss >> it->second.limit;
@@ -222,45 +227,38 @@ bool ChannelHandler::set_limit(std::string const& channel_name, std::string cons
     return false;
 }
 
-void ChannelHandler::unset_limit(std::string const& channel_name)
-{
-    std::map<std::string ,Channel>::iterator it = _channels.find(channel_name);
-    if (it != _channels.end())
-        it->second.limit = 0;
-        //should we throw an exception if channel didnt exist?
-}
-
-bool ChannelHandler::set_res_topic(std::string const& channel_name)
-{
+void ChannelHandler::unset_limit(std::string const& channel_name) {
     std::map<std::string, Channel>::iterator it = _channels.find(channel_name);
     if (it != _channels.end())
-    {
+        it->second.limit = 0;
+    // should we throw an exception if channel didnt exist?
+}
+
+bool ChannelHandler::set_res_topic(std::string const& channel_name) {
+    std::map<std::string, Channel>::iterator it = _channels.find(channel_name);
+    if (it != _channels.end()) {
         it->second.rest_topic = true;
         return true;
     }
     return false;
 }
-void ChannelHandler::unset_res_topic(std::string const& channel_name)
-{
+void ChannelHandler::unset_res_topic(std::string const& channel_name) {
     std::map<std::string, Channel>::iterator it = _channels.find(channel_name);
     if (it != _channels.end())
         it->second.rest_topic = false;
-
 }
 
-std::string ChannelHandler::gimmi_topic(std::string const& channel_name)
-{
+std::string ChannelHandler::gimmi_topic(std::string const& channel_name) {
     std::map<std::string, Channel>::iterator it = _channels.find(channel_name);
     if (it != _channels.end())
         return it->second.topic;
     return "";
 }
 
-std::string ChannelHandler::set_topic(std::string const& channel_name, std::string const& topic)
-{
+std::string ChannelHandler::set_topic(std::string const& channel_name,
+                                      std::string const& topic) {
     std::map<std::string, Channel>::iterator it = _channels.find(channel_name);
-    if (it != _channels.end())
-    {
+    if (it != _channels.end()) {
         it->second.topic = topic;
         return topic;
     }
