@@ -1,6 +1,7 @@
 #ifndef IRCREPLIES_HPP
 #define IRCREPLIES_HPP
 
+#include <cstdlib>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -24,25 +25,30 @@ inline void RPL_NOTOPIC(Client& client, const Channel channel) {
 inline void RPL_NAMREPLY(Client& client,
                   std::string const& channelname,
                   ChannelHandler& channels) {
-    std::pair<bool, std::vector<std::string> const&> userlist_res =
+    std::pair<bool, std::vector<std::string> > userlist_res =
         channels.get_users(channelname);
 
-    std::cout << userlist_res.first << " " << std::endl;
+    // std::cout << "/ " << userlist_res.second[0] << "/" << std::endl;
     if (!userlist_res.first)
         throw std::runtime_error("Channel not found");
-    std::vector<std::string> const& userlist = userlist_res.second;
+    else {
+        std::vector<std::string> const& userlist = userlist_res.second;
+        // std::cout << "**" << userlist_res.second[0] << "**" << std::endl
+        client.send(":" + client.get_nick() + "!" + client.get_user() + "@" +
+                            client.get_local_host() + " JOIN :" + channelname +
+                            "\r\n");
+        client.send( ":irc.1337.com 353 " + client.get_nick() + " = " +
+                            channelname + " :");
+        for (size_t i = 0; i < userlist.size(); i++) {
+            std::cout << userlist_res.second[i] << channels.is_admin(channelname, userlist[i]) << std::endl;
+        //     exit(0);
+            if (channels.is_admin(channelname, userlist[i]) == false)
+                client.send( "@");
+            else
+                client.send( "+");
 
-    client.send(":" + client.get_nick() + "!" + client.get_user() + "@" +
-                        client.get_local_host() + " JOIN :" + channelname +
-                        "\r\n");
-    client.send( ":irc.1337.com 353 " + client.get_nick() + " = " +
-                        channelname + " :");
-    for (size_t i = 0; i < userlist.size(); i++) {
-        if (channels.is_admin(channelname, userlist[i]))
-            client.send( "@");
-        else
-            client.send( "+");
-        client.send(userlist[i] + " ");
+            client.send(userlist[i] + " ");
+        }
     }
     client.send( "\r\n");
     client.send( ":irc.example.com 366 " + client.get_nick() + " " +

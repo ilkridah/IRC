@@ -44,7 +44,7 @@ class ChannelHandler {
     std::map<std::string, std::vector<std::string> > const& get_channels();
     Channel& get_channel(std::string const& channel_name);
 
-    std::pair<bool, std::vector<std::string> const&> get_users(
+    std::pair<bool, std::vector<std::string> > get_users(
         std::string const& channel_name);
     std::pair<bool, std::vector<std::string> const&> get_channels(
         std::string const& user_nickname);
