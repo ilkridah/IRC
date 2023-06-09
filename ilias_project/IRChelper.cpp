@@ -48,6 +48,7 @@ void IRC::mode(std::vector<std::string> args, Client& client) {
 }
 
 void IRC::join(Client& client, const Parser::Command& cmd) {
+    std::string pass;
     if (cmd.args[0] == "0") {
         channels.remove_user(client.get_nick());
         // std::vector<std::string> mychannels = client.get_myChannsList();
@@ -55,8 +56,13 @@ void IRC::join(Client& client, const Parser::Command& cmd) {
         //     part(mychannels, client);
         // return;
     }
+    
     for (size_t i = 0; i < cmd.chan_key.size(); i++) {
-        channels.add_user(cmd.args[0], client.get_nick(), cmd.args[1]);
+        if(cmd.args.size() < 2)
+             pass = "";
+        else
+            pass = cmd.args[1];
+        channels.add_user(cmd.args[0], client.get_nick(), pass);
         std::cout <<"dazt mn hna"<<std::endl;
             if (!channels.gimmi_topic(cmd.chan_key[i].first).empty())
                 IRCReplay::RPL_TOPIC(

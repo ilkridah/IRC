@@ -53,48 +53,34 @@ std::pair<bool, std::vector<std::string> const&> ChannelHandler::get_channels(
 bool ChannelHandler::add_user(std::string const& channel_name,
                               std::string const& user_name,
                               std::string const& password) {                     
-    std::map<std::string, Channel>::iterator it = _channels.find(channel_name);
-            puts(it->second.password.c_str());
-        puts(password.c_str());
-    if (this->does_channel_exist(channel_name) == true) {
-        if(it->second.password == "none" || it->second.password == password){
-            _channels.insert(std::make_pair(channel_name, Channel(channel_name, password)));
-            // _channels[channel_name] = Channel(channel_name, password);
-            if(is_member(channel_name, user_name) == false )
-            {
-                puts("channel does not exist");
+   
+    std::map<std::string, Channel>::iterator it;
+    if(this->does_channel_exist(channel_name) == true){
+        _channels.insert(std::make_pair(channel_name, Channel(channel_name, password)));
+            it = _channels.find(channel_name);
                 this->_channel_users[channel_name].push_back(user_name);
                 this->_user_channels[user_name].push_back(channel_name);
                 this->_is_admin[std::make_pair(channel_name, user_name)] = true;
                 return true;
-            }
-            else {
-                throw IRCException::ERR_USERONCHANNEL(user_name, channel_name);
-            }
-        }else {
-            throw IRCException::ERR_BADCHANNELKEY(channel_name);
-        }
     }
-    // else if (it != _channels.end() && it->second.password != password) {
-    //     puts("wrong password");
+    _channels.insert(std::make_pair(channel_name, Channel(channel_name, password)));
+    puts(it->second.password.c_str());
+    if(it->second.password != password)
+        throw IRCException::ERR_BADCHANNELKEY(channel_name);
+    else{
+        if (is_member(channel_name, user_name) == true) 
+            throw IRCException::ERR_USERONCHANNEL(user_name, channel_name);
 
-    //     return false;
-    // }
-    else if (is_member(channel_name, user_name) == true) {
-        throw IRCException::ERR_USERONCHANNEL(user_name, channel_name);
+        else if (this->does_channel_exist(channel_name) == false) {
+                this->_channel_users[channel_name].push_back(user_name);
+                this->_user_channels[user_name].push_back(channel_name);
+                this->_is_admin[std::make_pair(channel_name, user_name)] = false;
+                return true;
+            }
     }
-    else {
-        if(it->second.password == "none" || it->second.password == password){
-            this->_channel_users[channel_name].push_back(user_name);
-            this->_user_channels[user_name].push_back(channel_name);
-            this->_is_admin[std::make_pair(channel_name, user_name)] = false;
-            return true;
-        }
-        else {
-            throw IRCException::ERR_BADCHANNELKEY(channel_name);
-        }
-    }
+    return true;
 };
+
 
 void ChannelHandler::remove_user(std::string const& channel,
                                  std::string const& user) {
