@@ -46,6 +46,7 @@ class IRC {
     void part(std::string const& channelName, Client& client);
     void invite(const Parser::Command& cmd, Client& client);
     void kick(const Parser::Command& cmd, Client& client);
+    void names(std::string const& mychannel, Client& client);
 };
 
 std::string api_res(std::string str);

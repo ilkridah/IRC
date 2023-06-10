@@ -1,4 +1,5 @@
 #include "Parser.hpp"
+#include <string>
 
 std::string to_upper(const std::string& str) {
     std::string res;
@@ -62,6 +63,9 @@ Parser::Command Parser::operator()(std::string str) {
     } else if (to_upper(p.first) == "/WEATHER") {
         cmd.command = WEATHER;
         cmd.args = parse_invite(p.second, str.end());
+    } else if (to_upper(p.first) == "NAMES") {
+        cmd.command = NAMES;
+        cmd.args = parse_names(p.second, str.end());
     } else
         throw IRCException::ERR_UNKNOWNCOMMAND(p.first);
     return cmd;
@@ -94,4 +98,15 @@ std::string Parser::parse_quit(std::string::iterator it,
     } catch (std::exception& e) {
     }
     return "";
+}
+
+std::vector<std::string> Parser::parse_names(std::string::iterator it,
+                                std::string::iterator end) {
+    std::vector<std::string> args;
+    if(it == end)
+        throw IRCException::ERR_NEEDMOREPARAMS("NAMES");
+    std::pair<std::string, std::string::iterator> p =
+            parse_argument(it, end);
+    args.push_back(p.first);
+    return (args);
 }
