@@ -110,6 +110,7 @@ void ChannelHandler::remove_channel(std::string const& channel) {
 };
 
 bool ChannelHandler::is_admin(std::string channel, std::string user) {
+    
     return _is_admin[std::make_pair(channel, user)];
 }
 

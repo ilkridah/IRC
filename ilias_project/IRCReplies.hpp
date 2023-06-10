@@ -1,6 +1,7 @@
 #ifndef IRCREPLIES_HPP
 #define IRCREPLIES_HPP
 
+#include <cstdio>
 #include <cstdlib>
 #include <stdexcept>
 #include <string>
@@ -42,10 +43,13 @@ inline void RPL_NAMREPLY(Client& client,
         for (size_t i = 0; i < userlist.size(); i++) {
             std::cout << userlist_res.second[i] << channels.is_admin(channelname, userlist[i]) << std::endl;
         //     exit(0);
-            if (channels.is_admin(channelname, userlist[i]) == false)
+            std::cout << "["<<(channels.is_admin(channelname, userlist[i])) << "]" << std::endl;
+            if (channels.is_admin(channelname, userlist[i])){
+                puts("is it admin?");
                 client.send( "@");
-            else
-                client.send( "+");
+            }
+            // else
+            //     client.send( "+");
 
             client.send(userlist[i] + " ");
         }

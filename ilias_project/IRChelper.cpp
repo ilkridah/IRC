@@ -157,28 +157,30 @@ void IRC::kick(const Parser::Command& cmd, Client& client) {
     if (cmd.args.size() == 3)
         reason = cmd.args[2];
     for (size_t i = 0; i < cmd.chan_key.size(); i++) {
-        if(channels.is_admin(cmd.chan_key[i].first, client.get_nick()))
-            throw IRCException::ERR_CHANOPRIVSNEEDED(cmd.chan_key[i].first);
-        // channels.check_admin(cmd.chan_key[i].first, client.get_nick());
-        channels.remove_user(
-            cmd.chan_key[i].first,
-            _nickname_pool[cmd.chan_key[i].second]->get_nick());
-        // _nickname_pool[cmd.chan_key[i].second]->remove_channel(
-        //     cmd.chan_key[i].first);
-        channels.remove_user(cmd.chan_key[i].first, cmd.chan_key[i].second);
-        _nickname_pool[cmd.chan_key[i].second]->send(
-            ":" + client.get_nick() + "!" + client.get_user() + "@" +
-            client.get_local_host() + " KICK " + cmd.chan_key[i].first + " " +
-            cmd.chan_key[i].second + " :" + reason + "\r\n");
-
-        std::pair<bool, std::vector<std::string> > usersMap =
-            channels.get_users(cmd.chan_key[i].first);
-
-        for (size_t x = 0; x < usersMap.second.size(); x++) {
-            _nickname_pool[usersMap.second[x]]->send(
+        if (channels.is_admin(cmd.chan_key[i].first, client.get_nick()) == 1) {
+            // channels.check_admin(cmd.chan_key[i].first, client.get_nick());
+            channels.remove_user(
+                cmd.chan_key[i].first,
+                _nickname_pool[cmd.chan_key[i].second]->get_nick());
+            // _nickname_pool[cmd.chan_key[i].second]->remove_channel(
+            //     cmd.chan_key[i].first);
+            channels.remove_user(cmd.chan_key[i].first, cmd.chan_key[i].second);
+            _nickname_pool[cmd.chan_key[i].second]->send(
                 ":" + client.get_nick() + "!" + client.get_user() + "@" +
                 client.get_local_host() + " KICK " + cmd.chan_key[i].first +
                 " " + cmd.chan_key[i].second + " :" + reason + "\r\n");
+
+            std::pair<bool, std::vector<std::string> > usersMap =
+                channels.get_users(cmd.chan_key[i].first);
+
+            for (size_t x = 0; x < usersMap.second.size(); x++) {
+                _nickname_pool[usersMap.second[x]]->send(
+                    ":" + client.get_nick() + "!" + client.get_user() + "@" +
+                    client.get_local_host() + " KICK " + cmd.chan_key[i].first +
+                    " " + cmd.chan_key[i].second + " :" + reason + "\r\n");
+            }
+        } else {
+            throw IRCException::ERR_CHANOPRIVSNEEDED(cmd.chan_key[i].first);
         }
     }
 }
