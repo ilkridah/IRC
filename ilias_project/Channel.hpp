@@ -74,6 +74,11 @@ class ChannelHandler {
     void get_key(std::string const& channel_name, std::string const& key);
     void set_key(std::string const& channel_name, std::string const& key);
 
+    void set_topic(std::string const& channel_name, std::string const& topic);
+    void unset_topic(std::string const& channel_name);
+    
+
+
     void set_invite(std::string const& channel_name);
     void unset_invite(std::string const& channel_name);
 
@@ -84,5 +89,4 @@ class ChannelHandler {
     void unset_res_topic(std::string const& channel_name);
 
     std::string gimmi_topic(std::string const& channel_name);
-    std::string set_topic(std::string const& channel_name, std::string const& topic);
 };

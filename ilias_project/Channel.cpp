@@ -251,12 +251,23 @@ std::string ChannelHandler::gimmi_topic(std::string const& channel_name) {
     return "";
 }
 
-std::string ChannelHandler::set_topic(std::string const& channel_name,
+void ChannelHandler::set_topic(std::string const& channel_name,
                                       std::string const& topic) {
     std::map<std::string, Channel>::iterator it = _channels.find(channel_name);
-    if (it != _channels.end()) {
+    if (it != _channels.end())
+    {
         it->second.topic = topic;
-        return topic;
+        puts("topic");
     }
-    return "";
+    else 
+        throw IRCException::ERR_NOSUCHCHANNEL(channel_name);
+}
+
+void ChannelHandler::unset_topic(std::string const& channel_name)
+{
+    std::map<std::string, Channel>::iterator it = _channels.find(channel_name);
+    if (it != _channels.end())
+        it->second.topic = "";
+    else 
+        throw IRCException::ERR_NOSUCHCHANNEL(channel_name);
 }

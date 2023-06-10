@@ -114,10 +114,19 @@ void IRC::quit(Client& client) {
 }
 
 void IRC::topic(Client& client, const Parser::Command& cmd) {
-    if (!channels.does_channel_exist(cmd.args[0]))
+    if (channels.does_channel_exist(cmd.args[0])) {
+        puts("topic not on");
         throw IRCException::ERR_NOTONCHANNEL(cmd.args[0]);
-    if (cmd.args.size() > 1)
-        channels.set_topic(cmd.args[1], cmd.args[0]);
+    }
+    if (cmd.args.size() > 1) {
+        if (channels.get_channel(cmd.args[0]).rest_topic == true)
+            if (channels.is_admin(cmd.args[0], client.get_nick()) == true)
+                channels.set_topic(cmd.args[0], cmd.args[1]);
+            else
+                throw IRCException::ERR_CHANOPRIVSNEEDED(cmd.args[0]);
+        else
+            channels.set_topic(cmd.args[0], cmd.args[1]);
+    }
     if (channels.gimmi_topic(cmd.args[0]).empty())
         IRCReplay::RPL_NOTOPIC(client, channels.get_channel(cmd.args[0]));
     else
