@@ -27,7 +27,7 @@ class Client {
     bool _is_pass_valid;
     bool _is_registered;
     std::vector<std::string> myChannels;
-    int _max_channel;
+    // int _max_channel;
 
    public:
     Client(int fd);
@@ -68,8 +68,6 @@ class Client {
     std::string get_local_host() const { return _local_host; }
     std::string get_host() const { return _user_host; }
 
-    void add_myChannsList(std::string const& Channelname);
-    std::vector<std::string> get_myChannsList();
     void remove_channel(std::string const& Channelname);
     std::string get_local_host();
     ~Client();

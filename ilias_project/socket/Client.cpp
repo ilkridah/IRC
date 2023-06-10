@@ -7,7 +7,7 @@
 #include "Poll.hpp"
 
 Client::Client(int fd)
-    : _fd(fd), _buffer(), _nick_name(), _is_pass_valid(), _max_channel(){};
+    : _fd(fd), _buffer(), _nick_name(), _is_pass_valid(){};
 
 int Client::read_cmd() {
     char buff[512] = {0};
@@ -51,16 +51,10 @@ int Client::get_fd() const {
     return _fd;
 }
 
-void Client::add_myChannsList(std::string const& Channelname) {
-    _max_channel++;
-    if (_max_channel >= MAX_CHANNEL)
-        throw IRCException::ERR_TOOMANYCHANNELS(Channelname);
-    myChannels.push_back(Channelname);
-}
 
-std::vector<std::string> Client::get_myChannsList() {
-    return myChannels;
-}
+// std::vector<std::string> Client::get_myChannsList() {
+//     return myChannels;
+// }
 
 void Client::remove_channel(std::string const& Channelname)
 {

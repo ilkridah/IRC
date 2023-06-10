@@ -35,7 +35,6 @@ std::pair<bool, std::vector<std::string> > ChannelHandler::get_users(
     if (users_iter == this->_channel_users.end()) {
         return std::make_pair(false, std::vector<std::string>());
     }
-    puts("channel handler get users");
     return std::make_pair(true, users_iter->second);
 };
 
@@ -61,14 +60,9 @@ bool ChannelHandler::add_user(std::string const& channel_name,
         this->_is_admin[std::make_pair(channel_name, user_name)] = true;
         return true;
     }
-    _channels.insert(
-        std::make_pair(channel_name, Channel(channel_name, password)));
-    puts(it->second.password.c_str());
     if (it->second.password != password)
         throw IRCException::ERR_BADCHANNELKEY(channel_name);
     else {
-        _channels.insert(
-            std::make_pair(channel_name, Channel(channel_name, password)));
         if (is_member(channel_name, user_name) == true)
             throw IRCException::ERR_USERONCHANNEL(user_name, channel_name);
         else if (this->does_channel_exist(channel_name) == false) {
@@ -89,6 +83,7 @@ bool ChannelHandler::add_user(std::string const& channel_name,
             return true;
         }
     }
+    return true;
 };
 
 void ChannelHandler::remove_user(std::string const& channel,
@@ -185,7 +180,7 @@ bool ChannelHandler::is_member(const std::string& channel,
     std::map<std::string, std::vector<std::string> >::iterator res =
         _channel_users.find(channel);
     if (res == _channel_users.end()) {
-        return false;
+        throw IRCException::ERR_USERSDONTMATCH();
     };
     std::vector<std::string> users = res->second;
     for (std::vector<std::string>::iterator it = users.begin();

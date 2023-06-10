@@ -102,8 +102,8 @@ void IRC::exec_command(Client& client, const Parser::Command& cmd) {
             part(cmd.args[0], client);
             break;
         case Parser::KICK:
-        //     kick(cmd ,client);
-        //     break;
+            kick(cmd ,client);
+            break;
         case Parser::INVITE:
             invite(cmd, client);
             break;
