@@ -66,6 +66,27 @@ bool ChannelHandler::add_user(std::string const& channel_name,
         if (is_member(channel_name, user_name) == true)
             throw IRCException::ERR_USERONCHANNEL(user_name, channel_name);
         else if (this->does_channel_exist(channel_name) == false) {
+            if (it->second.InviteOnly)
+                if (!is_invited(channel_name, user_name))
+                    throw IRCException::ERR_INVITEONLYCHAN(channel_name);
+                else {
+                     _channels.insert(
+        std::make_pair(channel_name, Channel(channel_name, password)));
+                    if (it->second.limit != 0) {
+                        if (_channel_users[channel_name].size() + 1 >
+                            it->second.limit)
+                            throw IRCException::ERR_CHANNELISFULL(channel_name);
+                        else {
+                            this->_channel_users[channel_name].push_back(
+                                user_name);
+                            this->_user_channels[user_name].push_back(
+                                channel_name);
+                            this->_is_admin[std::make_pair(channel_name,
+                                                           user_name)] = false;
+                            return true;
+                        }
+                    }
+                }
             if (it->second.limit != 0) {
                 if (_channel_users[channel_name].size() + 1 > it->second.limit)
                     throw IRCException::ERR_CHANNELISFULL(channel_name);
@@ -76,14 +97,15 @@ bool ChannelHandler::add_user(std::string const& channel_name,
                         false;
                     return true;
                 }
+                this->_channel_users[channel_name].push_back(user_name);
+                this->_user_channels[user_name].push_back(channel_name);
+                this->_is_admin[std::make_pair(channel_name, user_name)] =
+                    false;
+                return true;
             }
-            this->_channel_users[channel_name].push_back(user_name);
-            this->_user_channels[user_name].push_back(channel_name);
-            this->_is_admin[std::make_pair(channel_name, user_name)] = false;
-            return true;
         }
+        return true;
     }
-    return true;
 };
 
 void ChannelHandler::remove_user(std::string const& channel,
@@ -110,7 +132,6 @@ void ChannelHandler::remove_channel(std::string const& channel) {
 };
 
 bool ChannelHandler::is_admin(std::string channel, std::string user) {
-    
     return _is_admin[std::make_pair(channel, user)];
 }
 
@@ -252,22 +273,19 @@ std::string ChannelHandler::gimmi_topic(std::string const& channel_name) {
 }
 
 void ChannelHandler::set_topic(std::string const& channel_name,
-                                      std::string const& topic) {
+                               std::string const& topic) {
     std::map<std::string, Channel>::iterator it = _channels.find(channel_name);
-    if (it != _channels.end())
-    {
+    if (it != _channels.end()) {
         it->second.topic = topic;
         puts("topic");
-    }
-    else 
+    } else
         throw IRCException::ERR_NOSUCHCHANNEL(channel_name);
 }
 
-void ChannelHandler::unset_topic(std::string const& channel_name)
-{
+void ChannelHandler::unset_topic(std::string const& channel_name) {
     std::map<std::string, Channel>::iterator it = _channels.find(channel_name);
     if (it != _channels.end())
         it->second.topic = "";
-    else 
+    else
         throw IRCException::ERR_NOSUCHCHANNEL(channel_name);
 }

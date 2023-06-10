@@ -115,7 +115,6 @@ void IRC::quit(Client& client) {
 
 void IRC::topic(Client& client, const Parser::Command& cmd) {
     if (channels.does_channel_exist(cmd.args[0])) {
-        puts("topic not on");
         throw IRCException::ERR_NOTONCHANNEL(cmd.args[0]);
     }
     if (cmd.args.size() > 1) {
