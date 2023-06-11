@@ -79,7 +79,7 @@ void IRC::privMessage(Client& client, const Parser::Command& cmd) {
     if (cmd.args.size() > 2)
         throw IRCException::ERR_TOOMANYTARGETS("targets");
     if (cmd.args[0][0] == '#') {
-        std::pair<bool, std::vector<std::string> const&> res =
+        std::pair<bool, std::vector<std::string> > res =
             channels.get_users(cmd.args[0]);
         if (res.first) {
             std::vector<std::string> const& users = res.second;
@@ -170,8 +170,6 @@ void IRC::kick(const Parser::Command& cmd, Client& client) {
             channels.remove_user(
                 cmd.chan_key[i].first,
                 _nickname_pool[cmd.chan_key[i].second]->get_nick());
-            // _nickname_pool[cmd.chan_key[i].second]->remove_channel(
-            //     cmd.chan_key[i].first);
             channels.remove_user(cmd.chan_key[i].first, cmd.chan_key[i].second);
             _nickname_pool[cmd.chan_key[i].second]->send(
                 ":" + client.get_nick() + "!" + client.get_user() + "@" +
@@ -210,7 +208,6 @@ void IRC::names(std::string const& mychannel, Client& client) {
         msg += "\r\n";
         client.send(msg);
         client.send(":irc.1337.com 366 " + client.get_nick() + " " + mychannel + " :End of NAMES list\r\n");
-        // IRCReplay::RPL_NAMREPLY(client, mychannel, channels);
     } else
         throw IRCException::ERR_NOSUCHCHANNEL(mychannel);
     
