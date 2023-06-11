@@ -6,8 +6,10 @@
 #include <utility>
 #include <vector>
 #include <sstream>
+#include "socket/Client.hpp"
 
 struct Channel {
+   
     std::string name;
     std::string password;
     std::string topic;

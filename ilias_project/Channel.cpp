@@ -9,6 +9,7 @@
 #include <vector>
 #include "IRCExecptions.hpp"
 #include "socket/Client.hpp"
+#include "socket/Client.hpp"
 
 ChannelHandler::ChannelHandler() : _user_channels(), _channel_users(){};
 
@@ -174,13 +175,6 @@ bool ChannelHandler::does_user_exist(std::string const& channel_name) const {
     return false;
 };
 
-// void ChannelHandler::CreateChannel(const std::string& channel_name,
-//                                  const std::string& user , std::string&
-//                                  password) {
-//     this->addUser(channel_name, user, true)
-//     _user_channels[user].push_back(channel_name);
-//     _is_admin[std::make_pair(channel_name, user)] = true;
-// };
 
 bool ChannelHandler::is_member(const std::string& channel,
                                const std::string& user) {
@@ -206,6 +200,10 @@ void ChannelHandler::set_key(std::string const& channel_name,
 }
 
 void ChannelHandler::set_invite(std::string const& channel_name) {
+    if(!does_channel_exist(channel_name))
+        throw IRCException::ERR_NOSUCHCHANNEL(channel_name);
+    if(is_admin(channel_name, _user_channels[channel_name][0]))
+        throw IRCException::ERR_CHANOPRIVSNEEDED(channel_name);
     std::map<std::string, Channel>::iterator it = _channels.find(channel_name);
     if (it != _channels.end())
         it->second.InviteOnly = true;

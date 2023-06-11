@@ -105,7 +105,7 @@ void IRC::quit(Client& client) {
 }
 
 void IRC::topic(Client& client, const Parser::Command& cmd) {
-    if (channels.does_channel_exist(cmd.args[0])) {
+    if (channels.does_channel_exist(cmd.args[0]) == false) {
         throw IRCException::ERR_NOTONCHANNEL(cmd.args[0]);
     }
     if (cmd.args.size() > 1) {
@@ -124,7 +124,7 @@ void IRC::topic(Client& client, const Parser::Command& cmd) {
 }
 
 void IRC::part(std::string const& mychannel, Client& client) {
-    if (channels.does_channel_exist(mychannel) == false) {
+    if (channels.does_channel_exist(mychannel) == true) {
         std::vector<std::string> chans = spliter(mychannel, ',');
         std::vector<std::string>::iterator it = chans.begin();
         for (; it != chans.end(); it++) {
