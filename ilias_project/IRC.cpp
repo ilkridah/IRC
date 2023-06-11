@@ -121,9 +121,8 @@ void IRC::exec_command(Client& client, const Parser::Command& cmd) {
 
 void IRC::broadcastMessage(const std::string& channelName,  const std::string& sender,
                            const std::string& message, const std::vector<std::string> & users) {
-    std::cout << "size : " <<  users.size() << std::endl;
     for (size_t i = 0; i < users.size(); i++) {
-        if (sender != users[i])
+        if(_nickname_pool[sender] != _nickname_pool[users[i]])
             _nickname_pool[users[i]]->send(sender + channelName + " :" + message + "\r\n");
     }
 }

@@ -46,7 +46,7 @@ class ChannelHandler {
 
     std::pair<bool, std::vector<std::string> > get_users(
         std::string const& channel_name);
-    std::pair<bool, std::vector<std::string> const&> get_channels(
+    std::pair<bool, std::vector<std::string> > get_channels(
         std::string const& user_nickname);
 
     bool is_admin(std::string channel, std::string user);

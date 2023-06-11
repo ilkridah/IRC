@@ -1,4 +1,5 @@
 #include "Channel.hpp"
+#include <sys/_types/_size_t.h>
 #include <algorithm>
 #include <cstdio>
 #include <iostream>
@@ -38,13 +39,15 @@ std::pair<bool, std::vector<std::string> > ChannelHandler::get_users(
     return std::make_pair(true, users_iter->second);
 };
 
-std::pair<bool, std::vector<std::string> const&> ChannelHandler::get_channels(
+std::pair<bool, std::vector<std::string> > ChannelHandler::get_channels(
     std::string const& user_nickname) {
     std::map<std::string, std::vector<std::string> >::iterator channels_iter =
         this->_user_channels.find(user_nickname);
 
-    if (channels_iter == this->_user_channels.end())
+    if (channels_iter == this->_user_channels.end()){
         return std::make_pair(false, std::vector<std::string>());
+    }
+
     return std::make_pair(true, channels_iter->second);
 };
 
@@ -167,8 +170,8 @@ bool ChannelHandler::does_user_exist(std::string const& channel_name) const {
         _user_channels.find(channel_name);
 
     if (it != _user_channels.end())
-        return false;
-    return true;
+        return true;
+    return false;
 };
 
 // void ChannelHandler::CreateChannel(const std::string& channel_name,

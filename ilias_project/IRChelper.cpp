@@ -51,26 +51,17 @@ void IRC::join(Client& client, const Parser::Command& cmd) {
     std::string pass;
     if (cmd.args[0] == "0") {
         channels.remove_user(client.get_nick());
-        // std::vector<std::string> mychannels = client.get_myChannsList();
-        // for (size_t i = 0; i < mychannels.size(); i++)
-        //     part(mychannels, client);
-        // return;
     }
-
     for (size_t i = 0; i < cmd.chan_key.size(); i++) {
         if (cmd.args.size() < 2)
             pass = "";
         else
             pass = cmd.args[1];
         channels.add_user(cmd.chan_key[i].first, client.get_nick(), pass);
-        std::cout << "dazt mn hna" << std::endl;
         if (!channels.gimmi_topic(cmd.chan_key[i].first).empty())
             IRCReplay::RPL_TOPIC(client,
                                  channels.get_channel(cmd.chan_key[i].first));
-        // client.add_myChannsList(cmd.chan_key[i].first);
-        std::cout << "dazt mn hna2" << std::endl;
         IRCReplay::RPL_NAMREPLY(client, cmd.chan_key[i].first, channels);
-        std::cout << "dazt mn hna3" << std::endl;
     }
 }
 
@@ -144,8 +135,6 @@ void IRC::part(std::string const& mychannel, Client& client) {
 }
 
 void IRC::invite(const Parser::Command& cmd, Client& client) {
-    // channels.is_admin(cmd.args[1], client.get_nick());
-
     std::map<std::string, Client*>::iterator it =
         _nickname_pool.find(cmd.args[0]);
     if (it != _nickname_pool.end()) {
@@ -154,7 +143,6 @@ void IRC::invite(const Parser::Command& cmd, Client& client) {
             client.get_local_host() + " INVITE " + cmd.args[0] + " " +
             cmd.args[1] + "\r\n");
         IRCReplay::RPL_INVITING(client, cmd.args[1], cmd.args[0]);
-        // channels.add_channel_guest(cmd.args[1], cmd.args[0]);
         channels.set_is_invited(cmd.args[1], cmd.args[0], true);
     } else
         throw IRCException::ERR_NOSUCHNICK(cmd.args[0]);
@@ -166,7 +154,6 @@ void IRC::kick(const Parser::Command& cmd, Client& client) {
         reason = cmd.args[2];
     for (size_t i = 0; i < cmd.chan_key.size(); i++) {
         if (channels.is_admin(cmd.chan_key[i].first, client.get_nick()) == 1) {
-            // channels.check_admin(cmd.chan_key[i].first, client.get_nick());
             channels.remove_user(
                 cmd.chan_key[i].first,
                 _nickname_pool[cmd.chan_key[i].second]->get_nick());
@@ -192,23 +179,49 @@ void IRC::kick(const Parser::Command& cmd, Client& client) {
 }
 
 void IRC::names(std::string const& mychannel, Client& client) {
-
-    std::pair<bool, std::vector<std::string> > usersMap =
-        channels.get_users(mychannel);
-    if (usersMap.first) {
-        std::vector<std::string> const& users = usersMap.second;
-        std::string msg = ":irc.1337.com 353 " + client.get_nick() + " = " + mychannel + " :";
-        for (size_t i = 0; i < users.size(); i++) {
-            if(channels.is_admin(mychannel, users[i]) == 1)
-                msg += "@";
-            msg += users[i];
-            if (i != users.size() - 1)
-                msg += " ";
+    if(mychannel[0] == '#'){
+        std::cout << mychannel[0] << std::endl;
+        std::pair<bool, std::vector<std::string> > usersMap =
+            channels.get_users(mychannel);
+        if (usersMap.first) {
+            std::vector<std::string> const& users = usersMap.second;
+            std::string msg = ":irc.1337.com 353 " + client.get_nick() + " = " + mychannel + " :";
+            for (size_t i = 0; i < users.size(); i++) {
+                if(channels.is_admin(mychannel, users[i]) == 1)
+                    msg += "@";
+                msg += users[i];
+                if (i != users.size() - 1)
+                    msg += " ";
+            }
+            msg += "\r\n";
+            client.send(msg);
+            client.send(":irc.1337.com 366 " + channels.list_users().back() + " " + mychannel + " :End of NAMES list\r\n");
+        } else
+            throw IRCException::ERR_NOSUCHNICK(mychannel);
+    }
+    else{
+        if(channels.does_user_exist(mychannel) == true)
+        {
+            std::pair<bool, std::vector<std::string> > chanMap =
+                channels.get_channels(client.get_nick());
+            std::cout << chanMap.first << std::endl;
+            for (size_t i=0;i<chanMap.second.size();i++)
+                std::cout << chanMap.second[i] << " ";
+            std::cout << std::endl;
+            if (chanMap.first) {
+                std::vector<std::string> const& chans = chanMap.second;
+                std::string msg = ":irc.1337.com 353 " + client.get_nick() + " = " + " :";
+                for (size_t i = 0; i < chans.size(); i++) {
+                    msg += chans[i];
+                    if (i != chans.size() - 1)
+                        msg += " ";
+                }
+                client.send(msg + "\r\n");
+                client.send(":irc.1337.com 366 " + channels.list_channels().back() + " " + mychannel + " :End of NAMES list\r\n");
+            } else
+                throw IRCException::ERR_NOSUCHNICK(mychannel);
         }
-        msg += "\r\n";
-        client.send(msg);
-        client.send(":irc.1337.com 366 " + client.get_nick() + " " + mychannel + " :End of NAMES list\r\n");
-    } else
-        throw IRCException::ERR_NOSUCHCHANNEL(mychannel);
-    
+        // throw IRCException::ERR_NOSUCHCHANNEL(mychannel);
+    }
+
 }

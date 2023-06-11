@@ -16,7 +16,9 @@ SRC				= 	main.cpp \
 					bot.cpp 	
 
 CXX				= c++
-CXXFLAGS		= -Wall -Wextra  -Wshadow -std=c++98 -Wuninitialized -fsanitize=address
+# VERSION			= -std=c++98
+VERSION			= -std=c++17
+CXXFLAGS		= -Wall -Wextra  -Wshadow $(VERSION) -Wuninitialized -fsanitize=address
 
 OBJ				= $(SRC:.cpp=.o)	
 
