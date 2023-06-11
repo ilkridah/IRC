@@ -124,6 +124,8 @@ bool ChannelHandler::is_admin(std::string channel, std::string user) {
 bool ChannelHandler::set_is_admin(std::string channel,
                                   std::string user,
                                   bool admin) {
+    if(!is_member(channel, user))
+        throw IRCException::ERR_USERNOTINCHANNEL(user, channel);
     return _is_admin[std::make_pair(channel, user)] = admin;
 }
 

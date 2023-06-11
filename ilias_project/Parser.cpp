@@ -65,7 +65,7 @@ Parser::Command Parser::operator()(std::string str) {
         cmd.args = parse_invite(p.second, str.end());
     } else if (to_upper(p.first) == "NAMES") {
         cmd.command = NAMES;
-        cmd.args = parse_names(p.second, str.end());
+        cmd.args.push_back(parse_names(p.second, str.end()));
     } else
         throw IRCException::ERR_UNKNOWNCOMMAND(p.first);
     return cmd;
@@ -100,13 +100,9 @@ std::string Parser::parse_quit(std::string::iterator it,
     return "";
 }
 
-std::vector<std::string> Parser::parse_names(std::string::iterator it,
+std::string Parser::parse_names(std::string::iterator it,
                                 std::string::iterator end) {
-    std::vector<std::string> args;
-    if(it == end)
-        throw IRCException::ERR_NEEDMOREPARAMS("NAMES");
-    std::pair<std::string, std::string::iterator> p =
+        std::pair<std::string, std::string::iterator> p =
             parse_argument(it, end);
-    args.push_back(p.first);
-    return (args);
+        return p.first;
 }

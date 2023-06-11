@@ -204,11 +204,12 @@ void IRC::names(std::string const& mychannel, Client& client) {
         {
             std::pair<bool, std::vector<std::string> > chanMap =
                 channels.get_channels(client.get_nick());
-            std::cout << chanMap.first << std::endl;
+            std::pair<bool, std::vector<std::string> > usersMap =
+            channels.get_users(mychannel);
             for (size_t i=0;i<chanMap.second.size();i++)
                 std::cout << chanMap.second[i] << " ";
             std::cout << std::endl;
-            if (chanMap.first) {
+            if (chanMap.first && usersMap.first) {
                 std::vector<std::string> const& chans = chanMap.second;
                 std::string msg = ":irc.1337.com 353 " + client.get_nick() + " = " + " :";
                 for (size_t i = 0; i < chans.size(); i++) {
@@ -221,7 +222,6 @@ void IRC::names(std::string const& mychannel, Client& client) {
             } else
                 throw IRCException::ERR_NOSUCHNICK(mychannel);
         }
-        // throw IRCException::ERR_NOSUCHCHANNEL(mychannel);
     }
 
 }
