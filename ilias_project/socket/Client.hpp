@@ -69,6 +69,7 @@ class Client {
     std::string get_host() const { return _user_host; }
 
     void remove_channel(std::string const& Channelname);
+    std::vector<std::string> get_myChannels() const { return myChannels; }
     std::string get_local_host();
     ~Client();
 };
