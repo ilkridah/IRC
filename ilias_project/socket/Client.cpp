@@ -12,13 +12,16 @@ Client::Client(int fd)
 int Client::read_cmd() {
     char buff[512] = {0};
     int size = 0;
-    if ((size = ::recv(_fd, buff, 512, 0)) == 0) {
+    size = recv(_fd, buff, 512, 0);
+    if (size  <= 0) {
         shutdown(_fd, 0);
         std::cout << "Client disconnected" << std::endl;
         return 0;
+    }else if(size < 512){
+        buff[size] = '\0';
+        _buffer.append(std::string(buff));
     }
-    buff[size] = '\0';
-    _buffer.append(std::string(buff));
+    
     return 1;
 };
 

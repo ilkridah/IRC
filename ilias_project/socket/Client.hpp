@@ -58,9 +58,10 @@ class Client {
         _local_host = local_host;
     }
     size_t send(std::string buffer) {
-        int _send = ::send(_fd, buffer.c_str(), buffer.size(), 0);
-        if(_send < 0){
-            std::cerr << "Error to send" << std::endl; exit(1);}
+        size_t _send;
+        if((_send = ::send(_fd, buffer.c_str(), buffer.size(), 0) <= 0)){
+            std::cerr << "Error to send" << std::endl;
+            exit(1);}
         else 
             return _send;
     }
