@@ -262,7 +262,6 @@ void ChannelHandler::set_topic(std::string const& channel_name,
     std::map<std::string, Channel>::iterator it = _channels.find(channel_name);
     if (it != _channels.end()) {
         it->second.topic = topic;
-        puts("topic");
     } else
         throw IRCException::ERR_NOSUCHCHANNEL(channel_name);
 }

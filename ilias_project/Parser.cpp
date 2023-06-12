@@ -102,7 +102,11 @@ std::string Parser::parse_quit(std::string::iterator it,
 
 std::string Parser::parse_names(std::string::iterator it,
                                 std::string::iterator end) {
+    try {
         std::pair<std::string, std::string::iterator> p =
             parse_argument(it, end);
         return p.first;
+    } catch (std::exception& e) {
+    }
+    return "";
 }

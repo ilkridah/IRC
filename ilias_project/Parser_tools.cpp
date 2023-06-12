@@ -12,6 +12,13 @@ std::pair<std::string, std::string::iterator> Parser::parse_argument(
         for (; it != end; it++) {
             arg += *it;
         }
+    }if (*it == '"') {
+        ++it;
+        while (it != end && *it != '"') {
+            arg += *it;
+            ++it;
+        }
+        
     } else {
         for (; it != end; it++) {
             if (*it == ' ') {

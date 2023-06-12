@@ -45,7 +45,6 @@ inline void RPL_NAMREPLY(Client& client,
         //     exit(0);
             std::cout << "["<<(channels.is_admin(channelname, userlist[i])) << "]" << std::endl;
             if (channels.is_admin(channelname, userlist[i])){
-                puts("is it admin?");
                 client.send( "@");
             }
             // else
