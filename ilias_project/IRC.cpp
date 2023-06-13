@@ -108,10 +108,10 @@ void IRC::exec_command(Client& client, const Parser::Command& cmd) {
             invite(cmd, client);
             break;
         case Parser::NAMES:
-            if (cmd.args.size() > 1)
-                names(cmd.args[0], client);
-            else 
+            if (cmd.args[0].empty())
                 names(client);
+            else if(!cmd.args[0].empty())
+                names(cmd.args[0], client);
             break;
         case Parser::WEATHER:
             client.send(api_res(cmd.args[0]));
