@@ -29,27 +29,19 @@ inline void RPL_NAMREPLY(Client& client,
     std::pair<bool, std::vector<std::string> > userlist_res =
         channels.get_users(channelname);
 
-    // std::cout << "/ " << userlist_res.second[0] << "/" << std::endl;
     if (!userlist_res.first)
         throw std::runtime_error("Channel not found");
     else {
         std::vector<std::string> const& userlist = userlist_res.second;
-        // std::cout << "**" << userlist_res.second[0] << "**" << std::endl
         client.send(":" + client.get_nick() + "!" + client.get_user() + "@" +
                             client.get_local_host() + " JOIN :" + channelname +
                             "\r\n");
         client.send( ":irc.1337.com 353 " + client.get_nick() + " = " +
                             channelname + " :");
         for (size_t i = 0; i < userlist.size(); i++) {
-            std::cout << userlist_res.second[i] << channels.is_admin(channelname, userlist[i]) << std::endl;
-        //     exit(0);
-            std::cout << "["<<(channels.is_admin(channelname, userlist[i])) << "]" << std::endl;
             if (channels.is_admin(channelname, userlist[i])){
                 client.send( "@");
             }
-            // else
-            //     client.send( "+");
-
             client.send(userlist[i] + " ");
         }
     }

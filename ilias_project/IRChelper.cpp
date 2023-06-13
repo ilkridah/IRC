@@ -53,11 +53,7 @@ void IRC::join(Client& client, const Parser::Command& cmd) {
         channels.remove_user(client.get_nick());
     }
     for (size_t i = 0; i < cmd.chan_key.size(); i++) {
-        if (cmd.args.size() < 2)
-            pass = "";
-        else
-            pass = cmd.args[1];
-        channels.add_user(cmd.chan_key[i].first, client.get_nick(), pass);
+        channels.add_user(cmd.chan_key[i].first, client.get_nick(), cmd.chan_key[i].second);
         if (!channels.gimmi_topic(cmd.chan_key[i].first).empty())
             IRCReplay::RPL_TOPIC(client,
                                  channels.get_channel(cmd.chan_key[i].first));
@@ -210,31 +206,6 @@ void IRC::names(std::string const& mychannel, Client& client) {
     } else
         throw IRCException::ERR_NOSUCHCHANNEL(mychannel);
 }
-//     if(channels.does_user_exist(mychannel) == true)
-//     {
-//         std::pair<bool, std::vector<std::string> > chanMap =
-//             channels.get_channels(client.get_nick());
-//         std::pair<bool, std::vector<std::string> > usersMap =
-//         channels.get_users(mychannel);
-//         for (size_t i=0;i<chanMap.second.size();i++)
-//             std::cout << chanMap.second[i] << " ";
-//         std::cout << std::endl;
-//         if (chanMap.first && usersMap.first) {
-//             std::vector<std::string> const& chans = chanMap.second;
-//             std::string msg = ":irc.1337.com 353 " + client.get_nick() + " =
-//             " + " :"; for (size_t i = 0; i < chans.size(); i++) {
-//                 msg += chans[i];
-//                 if (i != chans.size() - 1)
-//                     msg += " ";
-//             }
-//             client.send(msg + "\r\n");
-//             client.send(":irc.1337.com 366 " +
-//             channels.list_channels().back() + " " + mychannel + " :End of
-//             NAMES list\r\n");
-//         } else
-//             throw IRCException::ERR_NOSUCHNICK(mychannel);
-//     }
-// }
 
 void IRC::names(Client& client) {
     std::pair<bool, std::vector<std::string> > tmp;

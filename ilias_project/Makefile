@@ -12,8 +12,8 @@ SRC				= 	main.cpp \
 					Parser_authentification.cpp \
 					Parser_channel.cpp \
 					Parser_tools.cpp \
-					Channel_cmd.cpp \
-					bot.cpp 	
+					bot.cpp \
+					 	
 
 CXX				= c++
 VERSION			= -std=c++98
@@ -27,8 +27,8 @@ RM				= rm -f
 all:	$(NAME)
 
 run: all
-	echo 2000 pass && \
-	./$(NAME) 2000 pass
+	echo 5000 pass && \
+	./$(NAME) 5000 pass
 
 $(NAME):		$(OBJ) ./socket/Socket.hpp IRCExecptions.hpp IRCReplies.hpp Channel.hpp IRC.hpp Parser.hpp
 				$(CXX) $(CXXFLAGS) $(OBJ) -o $(NAME) -lcurl
