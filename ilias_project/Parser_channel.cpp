@@ -16,7 +16,7 @@ std::vector<std::pair<std::string, std::string> > Parser::parse_channel(
     for (size_t i = 0; i < chan.size(); i++) {
         if (chan[i][0] != '#')
             throw IRCException::ERR_NOSUCHCHANNEL(chan[i]);
-        chan_key.push_back(std::make_pair(chan[i], "none"));
+        chan_key.push_back(std::make_pair(chan[i], ""));
     }
     if (args.size() == 2) {
         std::vector<std::string> key;
@@ -124,7 +124,7 @@ std::vector<std::pair<std::string, std::string> > Parser::parse_kick(std::string
     for (size_t i = 0; i < chan.size(); i++) {
         if (chan[i][0] != '#')
             throw IRCException::ERR_NOSUCHCHANNEL(chan[i]);
-        chan_key.push_back(std::make_pair(chan[i], "none"));
+        chan_key.push_back(std::make_pair(chan[i], ""));
     }
         std::vector<std::string> key;
         if (args[1].find(',') != std::string::npos)

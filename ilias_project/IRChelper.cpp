@@ -26,7 +26,7 @@ void IRC::mode(std::vector<std::string> args, Client& client) {
         else if (args[1] == "+k" && args.size() == 3) {
             channels.set_key(args[0], args[2]);
         } else if (args[1] == "-k" && args.size() == 2)
-            channels.set_key(args[0], "");
+            channels.unset_key(args[0]);
         else if (args[1] == "+i" && args.size() == 2)
             channels.set_invite(args[0]);
         else if (args[1] == "-i" && args.size() == 2)

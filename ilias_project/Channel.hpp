@@ -75,6 +75,7 @@ class ChannelHandler {
                        std::string& password);
     void get_key(std::string const& channel_name, std::string const& key);
     void set_key(std::string const& channel_name, std::string const& key);
+    void unset_key(std::string & channel_name);
 
     void set_topic(std::string const& channel_name, std::string const& topic);
     void unset_topic(std::string const& channel_name);

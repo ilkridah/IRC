@@ -69,7 +69,11 @@ bool ChannelHandler::add_user(std::string const& channel_name,
 
   
     if (channel.password != password)
+    {
+        std::cout << "----" << channel.password << "----" << std::endl;
+        std::cout << "----" << password << "----" << std::endl;
         throw IRCException::ERR_BADCHANNELKEY(channel_name);
+    }
 
 
     if (is_member(channel_name, user_name))
@@ -199,6 +203,17 @@ void ChannelHandler::set_key(std::string const& channel_name,
     std::map<std::string, Channel>::iterator it = _channels.find(channel_name);
     if (it != _channels.end())
         it->second.password = key;
+}
+void ChannelHandler::unset_key(std::string & channel_name) {
+    std::map<std::string, Channel>::iterator it = _channels.find(channel_name);
+    if (it != _channels.end())
+    {
+        std::cout<<     it->second.password << std::endl;
+
+        it->second.password.erase();
+        std::cout<< "-----" <<     it->second.password << std::endl;
+    }
+
 }
 
 void ChannelHandler::set_invite(std::string const& channel_name) {
