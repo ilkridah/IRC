@@ -53,7 +53,8 @@ void IRC::join(Client& client, const Parser::Command& cmd) {
         channels.remove_user(client.get_nick());
     }
     for (size_t i = 0; i < cmd.chan_key.size(); i++) {
-        channels.add_user(cmd.chan_key[i].first, client.get_nick(), cmd.chan_key[i].second);
+        channels.add_user(cmd.chan_key[i].first, client.get_nick(),
+                          cmd.chan_key[i].second);
         if (!channels.gimmi_topic(cmd.chan_key[i].first).empty())
             IRCReplay::RPL_TOPIC(client,
                                  channels.get_channel(cmd.chan_key[i].first));
@@ -119,19 +120,22 @@ void IRC::topic(Client& client, const Parser::Command& cmd) {
         IRCReplay::RPL_TOPIC(client, channels.get_channel(cmd.args[0]));
 }
 
-void IRC::part(std::string const& mychannel, Client& client) {
+void IRC::part(const Parser::Command& cmd, Client& client) {
     std::string reason = "Leaving";
-    if (channels.does_channel_exist(mychannel) == true) {
-        std::vector<std::string> chans = spliter(mychannel, ',');
-        std::vector<std::string>::iterator it = chans.begin();
-        for (; it != chans.end(); it++) {
+    std::vector<std::string> tmp;
+    tmp = cmd.args;
+    std::vector<std::string>::iterator it =tmp.begin();
+    for (; it != tmp.end(); it++) {
+        if (channels.does_channel_exist(*it) == true) {
             channels.remove_user(*it, client.get_nick());
             client.send(":" + client.get_nick() + "!" + client.get_user() +
                         "@" + client.get_local_host() + " PART " + *it + " :" +
                         reason + "\r\n");
         }
-    } else
-        throw IRCException::ERR_NOSUCHCHANNEL(mychannel);
+        else 
+            throw IRCException::ERR_NOSUCHCHANNEL(*it);
+        
+    }
 }
 
 void IRC::invite(const Parser::Command& cmd, Client& client) {
@@ -219,8 +223,8 @@ void IRC::names(Client& client) {
                 channels.get_users(tmp.second[i]);
             if (tmp1.first) {
                 for (size_t j = 0; j < tmp1.second.size(); j++) {
-                    if (channels.is_admin(tmp.second[i],tmp1.second[j]))
-                        msg += "@" ;
+                    if (channels.is_admin(tmp.second[i], tmp1.second[j]))
+                        msg += "@";
                     msg += tmp1.second[j] + " ";
                 }
             }

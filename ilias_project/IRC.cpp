@@ -99,7 +99,7 @@ void IRC::exec_command(Client& client, const Parser::Command& cmd) {
             topic(client, cmd);
             break;
         case Parser::PART:
-            part(cmd.args[0], client);
+            part(cmd, client);
             break;
         case Parser::KICK:
             kick(cmd ,client);
