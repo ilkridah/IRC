@@ -13,12 +13,13 @@ SRC				= 	main.cpp \
 					Parser_channel.cpp \
 					Parser_tools.cpp \
 					bot.cpp \
+					IRCReplies.cpp \
 					 	
 
 CXX				= c++
 VERSION			= -std=c++98
 
-CXXFLAGS		= -Wall -Wextra  -Wshadow $(VERSION) -Wuninitialized -fsanitize=address
+CXXFLAGS		= -Wall -Wextra -Werror -Wshadow $(VERSION) -Wuninitialized -fsanitize=address
 
 OBJ				= $(SRC:.cpp=.o)	
 

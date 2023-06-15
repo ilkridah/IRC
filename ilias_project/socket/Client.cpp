@@ -1,10 +1,5 @@
 #include "Client.hpp"
-#include <sys/_types/_size_t.h>
-#include <sys/socket.h>
-#include <unistd.h>
-#include <cassert>
-#include <iostream>
-#include "Poll.hpp"
+
 
 Client::Client(int fd)
     : _fd(fd), _buffer(), _nick_name(), _is_pass_valid(){};

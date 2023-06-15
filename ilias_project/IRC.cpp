@@ -1,18 +1,4 @@
 #include "IRC.hpp"
-#include <sys/_types/_size_t.h>
-#include <sys/qos.h>
-#include <sys/socket.h>
-#include <climits>
-#include <cstdlib>
-#include <exception>
-#include <iostream>
-#include <stdexcept>
-#include <string>
-#include <vector>
-#include "IRCReplies.hpp"
-#include "Parser.hpp"
-#include "socket/Client.hpp"
-#include "socket/Poll.hpp"
 
 IRC::IRC(Poll& poll, Server& server, std::string password)
     : _password(password),

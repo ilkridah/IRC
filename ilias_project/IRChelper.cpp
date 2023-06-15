@@ -8,10 +8,10 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include "IRCReplies.hpp"
 #include "Channel.hpp"
 #include "IRC.hpp"
 #include "IRCExecptions.hpp"
-#include "IRCReplies.hpp"
 #include "Parser.hpp"
 #include "socket/Client.hpp"
 #include "socket/Poll.hpp"

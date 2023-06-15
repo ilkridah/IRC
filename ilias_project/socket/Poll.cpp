@@ -1,8 +1,5 @@
 #include "Poll.hpp"
-#include <cassert>
-#include <iostream>
-#include <vector>
-#include "Client.hpp"
+
 
 Poll::Poll() : _poll_fds() {}
 

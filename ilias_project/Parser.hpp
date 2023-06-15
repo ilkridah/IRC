@@ -1,5 +1,4 @@
-#ifndef PARSER_HPP
-#define PARSER_HPP
+#pragma once
 #include <iostream>
 #include <cassert>
 #include <exception>
@@ -11,19 +10,6 @@
 #include <vector>
 #include <string>
 #include "IRCExecptions.hpp"
-
-// std::pair<std::string, std::string::iterator> get_command(
-//     std::string::iterator it,
-//     std::string::iterator end) {
-//     std::string command;
-//     for (; it != end; it++) {
-//         if (*it == ' ') {
-//             return make_pair(command, it);
-//         }
-//         command += *it;
-//     }
-//     return make_pair(command, it);
-// }
 
 class Parser {
    public:
@@ -97,10 +83,7 @@ class Parser {
 
     
 
-    // TODO:
     static void check_nick_rules(std::string str);
     static void check_name_rules(std::string str);
 };
  std::vector<std::string> spliter(std::string str, char delim);
-
-#endif

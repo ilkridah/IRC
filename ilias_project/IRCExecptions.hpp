@@ -1,5 +1,4 @@
-#ifndef IRCEXECPTIONS_HPP
-#define IRCEXECPTIONS_HPP
+#pragma once
 #include <stdexcept>
 #include <string>
 
@@ -255,5 +254,3 @@ struct ERR_USERSDONTMATCH : public std::runtime_error {
 };
 
 };
-
-#endif

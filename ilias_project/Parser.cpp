@@ -1,5 +1,4 @@
 #include "Parser.hpp"
-#include <string>
 
 std::string to_upper(const std::string& str) {
     std::string res;

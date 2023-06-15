@@ -1,5 +1,4 @@
-#ifndef IRC_HPP
-#define IRC_HPP
+#pragma once
 #include <cassert>
 #include <set>
 #include <string>
@@ -9,6 +8,8 @@
 #include "socket/Client.hpp"
 #include "socket/Poll.hpp"
 #include "socket/Server.hpp"
+#include "IRCExecptions.hpp"
+#include "IRCReplies.hpp"
 
 #include <sstream>
 
@@ -48,4 +49,3 @@ class IRC {
 };
 
 std::string api_res(std::string str);
-#endif

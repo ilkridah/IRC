@@ -1,9 +1,7 @@
-#ifndef SOCKET_HPP_
-#define SOCKET_HPP_
+#pragma once
 
 #include "Client.hpp"
 #include "Poll.hpp"
 #include "Server.hpp"
 
 
-#endif
