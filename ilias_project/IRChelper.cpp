@@ -18,6 +18,7 @@
 
 void IRC::mode(std::vector<std::string> args, Client& client) {
     std::string admin = client.get_nick();
+
     if (channels.is_admin(args[0], admin)) {
         if (args[1] == "+o" && args.size() == 3)
             channels.set_is_admin(args[0], args[2], true);

@@ -76,10 +76,6 @@ std::vector<std::string> Parser::parse_mode(std::string::iterator it,
             it = p.second;
         }
     }
-    for(size_t i = 0; i < args.size() ; i++)
-    {
-        std::cout << args[i] << std::endl;
-    }
     if(args.size() < 2)
         throw IRCException::ERR_NEEDMOREPARAMS("MODE");
     return args;

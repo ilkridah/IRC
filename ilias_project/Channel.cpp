@@ -17,7 +17,7 @@ Channel& ChannelHandler::get_channel(std::string const& channel_name) {
     std::map<std::string, Channel>::iterator it = _channels.find(channel_name);
     if (it == _channels.end())
         throw IRCException::ERR_NOSUCHCHANNEL(channel_name);
-    return it->second;  // what should we do?
+    return it->second; 
 }
 
 std::pair<bool, std::vector<std::string> > ChannelHandler::get_users(
@@ -58,8 +58,7 @@ bool ChannelHandler::add_user(std::string const& channel_name,
     Channel& channel = it->second;
 
     if (channel.password != password) {
-        std::cout << "----" << channel.password << "----" << std::endl;
-        std::cout << "----" << password << "----" << std::endl;
+
         throw IRCException::ERR_BADCHANNELKEY(channel_name);
     }
 
@@ -189,12 +188,16 @@ void ChannelHandler::set_key(std::string const& channel_name,
     std::map<std::string, Channel>::iterator it = _channels.find(channel_name);
     if (it != _channels.end())
         it->second.password = key;
+    else
+        throw IRCException::ERR_NOSUCHCHANNEL(channel_name);
 }
 void ChannelHandler::unset_key(std::string& channel_name) {
     std::map<std::string, Channel>::iterator it = _channels.find(channel_name);
     if (it != _channels.end()) {
         it->second.password.erase();
     }
+    else
+        throw IRCException::ERR_NOSUCHCHANNEL(channel_name);
 }
 
 void ChannelHandler::set_invite(std::string const& channel_name) {
@@ -229,7 +232,6 @@ void ChannelHandler::unset_limit(std::string const& channel_name) {
     std::map<std::string, Channel>::iterator it = _channels.find(channel_name);
     if (it != _channels.end())
         it->second.limit = 0;
-    // should we throw an exception if channel didnt exist?
 }
 
 bool ChannelHandler::set_res_topic(std::string const& channel_name) {
@@ -250,7 +252,8 @@ std::string ChannelHandler::gimmi_topic(std::string const& channel_name) {
     std::map<std::string, Channel>::iterator it = _channels.find(channel_name);
     if (it != _channels.end())
         return it->second.topic;
-    return "";
+    else
+        throw IRCException::ERR_NOSUCHCHANNEL(channel_name);
 }
 
 void ChannelHandler::set_topic(std::string const& channel_name,
