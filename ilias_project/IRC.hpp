@@ -29,15 +29,12 @@ class IRC {
     void handle_client(int fd);
     void exec_command(Client& client, const Parser::Command& command);
     void start_loop();
-    // modification
-    Client* get_client(std::string& nick);
     void broadcastMessage(const std::string& channelName,
                           const std::string& sender,
                           const std::string& message,
                           const std::vector<std::string>& users);
 
     void authentification(Client& client, const Parser::Command& cmd);
-
     void quit(Client& client);
     void mode(std::vector<std::string> args, Client& client);
     void join(Client& client, const Parser::Command& cmd);

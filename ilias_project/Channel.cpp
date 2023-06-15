@@ -9,7 +9,6 @@
 #include <vector>
 #include "IRCExecptions.hpp"
 #include "socket/Client.hpp"
-#include "socket/Client.hpp"
 
 ChannelHandler::ChannelHandler() : _user_channels(), _channel_users(){};
 
@@ -45,7 +44,7 @@ std::pair<bool, std::vector<std::string> > ChannelHandler::get_channels(
     std::map<std::string, std::vector<std::string> >::iterator channels_iter =
         this->_user_channels.find(user_nickname);
 
-    if (channels_iter == this->_user_channels.end()){
+    if (channels_iter == this->_user_channels.end()) {
         return std::make_pair(false, std::vector<std::string>());
     }
 
@@ -55,9 +54,9 @@ std::pair<bool, std::vector<std::string> > ChannelHandler::get_channels(
 bool ChannelHandler::add_user(std::string const& channel_name,
                               std::string const& user_name,
                               std::string const& password) {
-  
     if (!does_channel_exist(channel_name)) {
-        _channels.insert(std::make_pair(channel_name, Channel(channel_name, password)));
+        _channels.insert(
+            std::make_pair(channel_name, Channel(channel_name, password)));
         _channel_users[channel_name].push_back(user_name);
         _user_channels[user_name].push_back(channel_name);
         _is_admin[std::make_pair(channel_name, user_name)] = true;
@@ -67,25 +66,23 @@ bool ChannelHandler::add_user(std::string const& channel_name,
     std::map<std::string, Channel>::iterator it = _channels.find(channel_name);
     Channel& channel = it->second;
 
-  
-    if (channel.password != password)
-    {
+    if (channel.password != password) {
         std::cout << "----" << channel.password << "----" << std::endl;
         std::cout << "----" << password << "----" << std::endl;
         throw IRCException::ERR_BADCHANNELKEY(channel_name);
     }
 
-
     if (is_member(channel_name, user_name))
         throw IRCException::ERR_USERONCHANNEL(user_name, channel_name);
-
 
     if (channel.InviteOnly) {
         if (!is_invited(channel_name, user_name))
             throw IRCException::ERR_INVITEONLYCHAN(channel_name);
-        if (channel.limit != 0 && _channel_users[channel_name].size() + 1 > channel.limit)
+        if (channel.limit != 0 &&
+            _channel_users[channel_name].size() + 1 > channel.limit)
             throw IRCException::ERR_CHANNELISFULL(channel_name);
-    } else if (channel.limit != 0 && _channel_users[channel_name].size() + 1 > channel.limit) {
+    } else if (channel.limit != 0 &&
+               _channel_users[channel_name].size() + 1 > channel.limit) {
         throw IRCException::ERR_CHANNELISFULL(channel_name);
     }
 
@@ -96,7 +93,6 @@ bool ChannelHandler::add_user(std::string const& channel_name,
 
     return true;
 }
-
 
 void ChannelHandler::remove_user(std::string const& channel,
                                  std::string const& user) {
@@ -128,7 +124,7 @@ bool ChannelHandler::is_admin(std::string channel, std::string user) {
 bool ChannelHandler::set_is_admin(std::string channel,
                                   std::string user,
                                   bool admin) {
-    if(!is_member(channel, user))
+    if (!is_member(channel, user))
         throw IRCException::ERR_USERNOTINCHANNEL(user, channel);
     return _is_admin[std::make_pair(channel, user)] = admin;
 }
@@ -181,7 +177,6 @@ bool ChannelHandler::does_user_exist(std::string const& channel_name) const {
     return false;
 };
 
-
 bool ChannelHandler::is_member(const std::string& channel,
                                const std::string& user) {
     std::map<std::string, std::vector<std::string> >::iterator res =
@@ -204,22 +199,17 @@ void ChannelHandler::set_key(std::string const& channel_name,
     if (it != _channels.end())
         it->second.password = key;
 }
-void ChannelHandler::unset_key(std::string & channel_name) {
+void ChannelHandler::unset_key(std::string& channel_name) {
     std::map<std::string, Channel>::iterator it = _channels.find(channel_name);
-    if (it != _channels.end())
-    {
-        std::cout<<     it->second.password << std::endl;
-
+    if (it != _channels.end()) {
         it->second.password.erase();
-        std::cout<< "-----" <<     it->second.password << std::endl;
     }
-
 }
 
 void ChannelHandler::set_invite(std::string const& channel_name) {
-    if(!does_channel_exist(channel_name))
+    if (!does_channel_exist(channel_name))
         throw IRCException::ERR_NOSUCHCHANNEL(channel_name);
-    if(is_admin(channel_name, _user_channels[channel_name][0]))
+    if (is_admin(channel_name, _user_channels[channel_name][0]))
         throw IRCException::ERR_CHANOPRIVSNEEDED(channel_name);
     std::map<std::string, Channel>::iterator it = _channels.find(channel_name);
     if (it != _channels.end())

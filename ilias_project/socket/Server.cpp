@@ -1,18 +1,3 @@
-// #pragma once
-// #include <string>
-
-// class Server
-// {
-// private:
-//     int _fd;
-//     int _port;
-//     int _pass
-// public:
-//     Server(int port);
-//     int accept() const;
-//     int get_fd() const;
-//     int get_port() const;
-// };
 
 #include "Server.hpp"
 

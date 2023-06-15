@@ -76,7 +76,8 @@ void IRC::privMessage(Client& client, const Parser::Command& cmd) {
                                  client.get_user() + "@" +
                                  client.get_local_host() + " PRIVMSG ",
                              msg, users);
-        };
+        } else
+            throw IRCException::ERR_CANNOTSENDTOCHAN(cmd.args[0]);
     } else {
         std::map<std::string, Client*>::iterator it =
             _nickname_pool.find(cmd.args[0]);

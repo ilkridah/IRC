@@ -5,7 +5,7 @@
 std::vector<std::pair<std::string, std::string> > Parser::parse_channel(
     std::string::iterator it,
     std::string::iterator end) {
-    std::vector<std::pair<std::string, std::string> > chan_key;
+    std::vector<std::pair<std::string, std::string> > chankey;
     std::vector<std::string> chan;
     std::vector<std::string> args = parse_join(it, end);
 
@@ -16,7 +16,7 @@ std::vector<std::pair<std::string, std::string> > Parser::parse_channel(
     for (size_t i = 0; i < chan.size(); i++) {
         if (chan[i][0] != '#')
             throw IRCException::ERR_NOSUCHCHANNEL(chan[i]);
-        chan_key.push_back(std::make_pair(chan[i], ""));
+        chankey.push_back(std::make_pair(chan[i], ""));
     }
     if (args.size() == 2) {
         std::vector<std::string> key;
@@ -25,9 +25,9 @@ std::vector<std::pair<std::string, std::string> > Parser::parse_channel(
         else
             key.push_back(args[1]);
         for (size_t i = 0; i < key.size() && key.size() <= chan.size(); i++)
-            chan_key[i].second = key[i];
+            chankey[i].second = key[i];
     }
-    return chan_key;
+    return chankey;
 }
 std::vector<std::string> Parser::parse_join(std::string::iterator it,
                                             std::string::iterator end) {
@@ -56,8 +56,6 @@ std::vector<std::string> Parser::parse_all(std::string::iterator it,
         while (it != end) {
             p = parse_argument(it, end);
             args.push_back(p.first);
-            // if (p.second == end)
-            //     return args;
             it = p.second;
         }
     }
@@ -76,8 +74,6 @@ std::vector<std::string> Parser::parse_mode(std::string::iterator it,
         while (it != end) {
             p = parse_argument(it, end);
             args.push_back(p.first);
-            // if (p.second == end)
-            //     return args;
             it = p.second;
         }
     }

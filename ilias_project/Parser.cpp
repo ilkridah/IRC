@@ -21,7 +21,6 @@ Parser::Command Parser::operator()(std::string str) {
     cmd.ath = NOT_REGISTRED;
     std::pair<std::string, std::string::iterator> p =
         get_command(str.begin(), str.end());
-    // check '\r\n' do please ????!!!?!?!!??!
     if (to_upper(p.first) == "PASS") {
         cmd.ath = PASS;
         std::string arg = parse_pass(p.second, str.end());
@@ -89,24 +88,19 @@ std::vector<std::string> Parser::parse_privmsg(std::string::iterator it,
     return args;
 }
 
-std::string Parser::parse_quit(std::string::iterator it,
-                               std::string::iterator end) {
+std::string Parser::parse_quit(std::string::iterator it, std::string::iterator end) {
     try {
-        std::pair<std::string, std::string::iterator> p =
-            parse_argument(it, end);
-        return p.first;
-    } catch (std::exception& e) {
+        return parse_argument(it, end).first;
+    } catch (const std::exception&) {
+        return "";
     }
-    return "";
 }
 
 std::string Parser::parse_names(std::string::iterator it,
                                 std::string::iterator end) {
     try {
-        std::pair<std::string, std::string::iterator> p =
-            parse_argument(it, end);
-        return p.first;
-    } catch (std::exception& e) {
+        return parse_argument(it, end).first;
+    } catch (const std::exception&) {
+        return "";
     }
-    return "";
 }
