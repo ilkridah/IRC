@@ -4,12 +4,12 @@
 #include <string>
 #include <vector>
 #include "Channel.hpp"
+#include "IRCExecptions.hpp"
+#include "IRCReplies.hpp"
 #include "Parser.hpp"
 #include "socket/Client.hpp"
 #include "socket/Poll.hpp"
 #include "socket/Server.hpp"
-#include "IRCExecptions.hpp"
-#include "IRCReplies.hpp"
 
 #include <sstream>
 
@@ -30,7 +30,8 @@ class IRC {
     void handle_client(int fd);
     void exec_command(Client& client, const Parser::Command& command);
     void start_loop();
-    void broadcastMessage(const std::string& channelName,
+    void broadcastMessage(const Client& client,
+                          const std::string& channelName,
                           const std::string& sender,
                           const std::string& message,
                           const std::vector<std::string>& users);

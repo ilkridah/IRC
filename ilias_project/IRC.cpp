@@ -1,4 +1,5 @@
 #include "IRC.hpp"
+#include "socket/Client.hpp"
 
 IRC::IRC(Poll& poll, Server& server, std::string password)
     : _password(password),
@@ -108,10 +109,10 @@ void IRC::exec_command(Client& client, const Parser::Command& cmd) {
     }
 }
 
-void IRC::broadcastMessage(const std::string& channelName,  const std::string& sender,
-                           const std::string& message, const std::vector<std::string> & users) {
+void IRC::broadcastMessage(const Client &client, const std::string& channelName,  const std::string& sender,
+                           const std::string& message, const std::vector<std::string> & users) {                     
     for (size_t i = 0; i < users.size(); i++) {
-        if(_nickname_pool[sender] != _nickname_pool[users[i]])
+        if(_nickname_pool[client.get_nick()] != _nickname_pool[users[i]])
             _nickname_pool[users[i]]->send(sender + channelName + " :" + message + "\r\n");
     }
 }

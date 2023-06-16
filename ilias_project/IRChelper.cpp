@@ -56,7 +56,7 @@ void IRC::privMessage(Client& client, const Parser::Command& cmd) {
             channels.get_users(cmd.args[0]);
         if (res.first) {
             std::vector<std::string> const& users = res.second;
-            broadcastMessage(cmd.args[0],
+            broadcastMessage(client,cmd.args[0],
                              ":" + client.get_nick() + "!~" +
                                  client.get_user() + "@" +
                                  client.get_local_host() + " PRIVMSG ",
@@ -108,13 +108,15 @@ void IRC::topic(Client& client, const Parser::Command& cmd) {
 
 void IRC::part(const Parser::Command& cmd, Client& client) {
     std::string reason = "Leaving";
+    std::vector<std::string> users = channels.list_users();
     std::vector<std::string> tmp;
     tmp = cmd.args;
-    std::vector<std::string>::iterator it =tmp.begin();
+    std::vector<std::string>::iterator it = tmp.begin();
     for (; it != tmp.end(); it++) {
         if (channels.does_channel_exist(*it) == true) {
             channels.remove_user(*it, client.get_nick());
-            client.send(":" + client.get_nick() + "!" + client.get_user() +
+            for(size_t i = 0; i < users.size(); i++)
+            _nickname_pool[users[i]]->send(":" + client.get_nick() + "!" + client.get_user() +
                         "@" + client.get_local_host() + " PART " + *it + " :" +
                         reason + "\r\n");
         }
