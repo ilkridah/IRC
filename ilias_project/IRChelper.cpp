@@ -1,20 +1,4 @@
-#include <sys/_types/_size_t.h>
-#include <sys/qos.h>
-#include <sys/socket.h>
-#include <climits>
-#include <cstdio>
-#include <cstdlib>
-#include <exception>
-#include <stdexcept>
-#include <string>
-#include <vector>
-#include "IRCReplies.hpp"
-#include "Channel.hpp"
 #include "IRC.hpp"
-#include "IRCExecptions.hpp"
-#include "Parser.hpp"
-#include "socket/Client.hpp"
-#include "socket/Poll.hpp"
 
 void IRC::mode(std::vector<std::string> args, Client& client) {
     std::string admin = client.get_nick();
