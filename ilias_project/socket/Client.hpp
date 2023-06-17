@@ -59,7 +59,7 @@ class Client {
     }
     size_t send(std::string buffer) {
         size_t _send;
-        if((_send = ::send(_fd, buffer.c_str(), buffer.size()) <= 0)){
+        if((_send = ::send(_fd, buffer.c_str(), buffer.size(),0) <= 0)){
             std::cerr << "Error to send" << std::endl;
             exit(1);}
         else 

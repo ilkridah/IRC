@@ -1,4 +1,5 @@
 #include "IRC.hpp"
+#include "IRCExecptions.hpp"
 
 void IRC::mode(std::vector<std::string> args, Client& client) {
     std::string admin = client.get_nick();
@@ -129,6 +130,10 @@ void IRC::part(const Parser::Command& cmd, Client& client) {
 void IRC::invite(const Parser::Command& cmd, Client& client) {
     std::map<std::string, Client*>::iterator it =
         _nickname_pool.find(cmd.args[0]);
+    if(!channels.does_channel_exist(cmd.args[1]))
+        throw IRCException::ERR_NOSUCHCHANNEL(cmd.args[1]);
+    if(channels.is_member(cmd.args[1],cmd.args[0]) == true)
+        throw IRCException::ERR_USERONCHANNEL(cmd.args[0],cmd.args[1]);
     if (it != _nickname_pool.end()) {
         _nickname_pool[cmd.args[0]]->send(
             ":" + client.get_nick() + "!" + client.get_user() + "@" +
