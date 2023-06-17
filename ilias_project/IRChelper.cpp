@@ -57,7 +57,7 @@ void IRC::privMessage(Client& client, const Parser::Command& cmd) {
             channels.get_users(cmd.args[0]);
         if (res.first) {
             std::vector<std::string> const& users = res.second;
-            broadcastMessage(client,cmd.args[0],
+            broadcastMessage(client, cmd.args[0],
                              ":" + client.get_nick() + "!~" +
                                  client.get_user() + "@" +
                                  client.get_local_host() + " PRIVMSG ",
@@ -109,33 +109,33 @@ void IRC::topic(Client& client, const Parser::Command& cmd) {
 
 void IRC::part(const Parser::Command& cmd, Client& client) {
     std::string reason = "Leaving";
-    std::vector<std::string> users = channels.list_users();
     std::vector<std::string> tmp;
     tmp = cmd.args;
     std::vector<std::string>::iterator it = tmp.begin();
     for (; it != tmp.end(); it++) {
         if (channels.does_channel_exist(*it) == true) {
-            if(!channels.is_member(*it, client.get_nick()))
+            std::pair<bool, std::vector<std::string> > Guser =
+                channels.get_users(*it);
+            if (!channels.is_member(*it, client.get_nick()))
                 throw IRCException::ERR_NOSUCHNICK(client.get_nick());
             channels.remove_user(*it, client.get_nick());
-            for(size_t i = 0; i < users.size(); i++)
-            _nickname_pool[users[i]]->send(":" + client.get_nick() + "!" + client.get_user() +
-                        "@" + client.get_local_host() + " PART " + *it + " :" +
-                        reason + "\r\n");
-        }
-        else 
+            for (size_t i = 0; i < Guser.second.size(); i++)
+                _nickname_pool[Guser.second[i]]->send(
+                    ":" + client.get_nick() + "!" + client.get_user() + "@" +
+                    client.get_local_host() + " PART " + *it + " :" + reason +
+                    "\r\n");
+        } else
             throw IRCException::ERR_NOSUCHCHANNEL(*it);
-        
     }
 }
 
 void IRC::invite(const Parser::Command& cmd, Client& client) {
     std::map<std::string, Client*>::iterator it =
         _nickname_pool.find(cmd.args[0]);
-    if(!channels.does_channel_exist(cmd.args[1]))
+    if (!channels.does_channel_exist(cmd.args[1]))
         throw IRCException::ERR_NOSUCHCHANNEL(cmd.args[1]);
-    if(channels.is_member(cmd.args[1],cmd.args[0]) == true)
-        throw IRCException::ERR_USERONCHANNEL(cmd.args[0],cmd.args[1]);
+    if (channels.is_member(cmd.args[1], cmd.args[0]) == true)
+        throw IRCException::ERR_USERONCHANNEL(cmd.args[0], cmd.args[1]);
     if (it != _nickname_pool.end()) {
         _nickname_pool[cmd.args[0]]->send(
             ":" + client.get_nick() + "!" + client.get_user() + "@" +
@@ -153,11 +153,14 @@ void IRC::kick(const Parser::Command& cmd, Client& client) {
         reason = cmd.args[2];
     for (size_t i = 0; i < cmd.chan_key.size(); i++) {
         if (channels.is_admin(cmd.chan_key[i].first, client.get_nick()) == 1) {
-            if(!channels.is_member(cmd.chan_key[i].first, cmd.chan_key[i].second))
+            if (!channels.is_member(cmd.chan_key[i].first,
+                                    cmd.chan_key[i].second))
                 throw IRCException::ERR_NOSUCHNICK(cmd.chan_key[i].second);
-            if(_nickname_pool[cmd.chan_key[i].second] != _nickname_pool[client.get_nick()])
-                channels.remove_user(cmd.chan_key[i].first, cmd.chan_key[i].second);
-            else 
+            if (_nickname_pool[cmd.chan_key[i].second] !=
+                _nickname_pool[client.get_nick()])
+                channels.remove_user(cmd.chan_key[i].first,
+                                     cmd.chan_key[i].second);
+            else
                 throw IRCException::ERR_SELFKICK(client.get_nick());
             _nickname_pool[cmd.chan_key[i].second]->send(
                 ":" + client.get_nick() + "!" + client.get_user() + "@" +
