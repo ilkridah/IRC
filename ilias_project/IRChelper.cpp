@@ -3,33 +3,44 @@
 
 void IRC::mode(std::vector<std::string> args, Client& client) {
     std::string admin = client.get_nick();
-
-    if (channels.is_admin(args[0], admin)) {
-        if (args[1] == "+o" && args.size() == 3)
-            channels.set_is_admin(args[0], args[2], true);
-        else if (args[1] == "-o" && args.size() == 3)
-            channels.set_is_admin(args[0], args[2], false);
-        else if (args[1] == "+k" && args.size() == 3) {
-            channels.set_key(args[0], args[2]);
-        } else if (args[1] == "-k" && args.size() == 2)
-            channels.unset_key(args[0]);
-        else if (args[1] == "+i" && args.size() == 2)
-            channels.set_invite(args[0]);
-        else if (args[1] == "-i" && args.size() == 2)
-            channels.unset_invite(args[0]);
-        else if (args[1] == "+l" && args.size() == 3) {
-            if (!channels.set_limit(args[0], args[2]))
-                throw ::IRCException::ERR_UNKNOWNMODE(args[1]);
-        } else if (args[1] == "-l" && args.size() == 2)
-            channels.unset_limit(args[0]);
-        else if (args[1] == "+t" && args.size() == 2)
-            channels.set_res_topic(args[0]);
-        else if (args[1] == "-t" && args.size() == 2)
-            channels.unset_res_topic(args[0]);
-        else
-            throw IRCException::ERR_UNKNOWNMODE(args[1]);
-    } else
-        throw IRCException::ERR_CHANOPRIVSNEEDED(args[0]);
+    if (args[0][0] == '#') {
+        if (channels.is_admin(args[0], admin)) {
+            if (args[1] == "+o" && args.size() == 3)
+                channels.set_is_admin(args[0], args[2], true);
+            else if (args[1] == "-o" && args.size() == 3)
+                channels.set_is_admin(args[0], args[2], false);
+            else if (args[1] == "+k" && args.size() == 3) {
+                channels.set_key(args[0], args[2]);
+            } else if (args[1] == "-k" && args.size() == 2)
+                channels.unset_key(args[0]);
+            else if (args[1] == "+i" && args.size() == 2)
+                channels.set_invite(args[0]);
+            else if (args[1] == "-i" && args.size() == 2)
+                channels.unset_invite(args[0]);
+            else if (args[1] == "+l" && args.size() == 3) {
+                if (!channels.set_limit(args[0], args[2]))
+                    throw ::IRCException::ERR_UNKNOWNMODE(args[1]);
+            } else if (args[1] == "-l" && args.size() == 2)
+                channels.unset_limit(args[0]);
+            else if (args[1] == "+t" && args.size() == 2)
+                channels.set_res_topic(args[0]);
+            else if (args[1] == "-t" && args.size() == 2)
+                channels.unset_res_topic(args[0]);
+            else
+                throw IRCException::ERR_UNKNOWNMODE(args[1]);
+        } else
+            throw IRCException::ERR_CHANOPRIVSNEEDED(args[0]);
+    } else {
+        if (client.get_nick() == args[0]) {
+            if (args[1] == "+i")
+                client.set_is_invisible();
+            else if (args[1] == "-i")
+                client.unset_is_invisible();
+            else
+                throw IRCException::ERR_UMODEUNKNOWNFLAG();
+        } else
+            throw IRCException::ERR_NOSUCHNICK(args[0]);
+    }
     client.send(IRCReplay::RPL_mode(args[1], args[0]));
 }
 
@@ -183,11 +194,13 @@ void IRC::names(std::string const& mychannel, Client& client) {
                 std::string msg = ":irc.1337.com 353 " + client.get_nick() +
                                   " = " + mychannel + " :";
                 for (size_t i = 0; i < users.size(); i++) {
-                    if (channels.is_admin(mychannel, users[i]) == 1)
-                        msg += "@";
-                    msg += users[i];
-                    if (i != users.size() - 1)
-                        msg += " ";
+                    if (!_nickname_pool[users[i]]->get_is_invisible()) {
+                        if (channels.is_admin(mychannel, users[i]) == 1)
+                            msg += "@";
+                        msg += users[i];
+                        if (i != users.size() - 1)
+                            msg += " ";
+                    }
                 }
                 msg += "\r\n";
                 client.send(msg);
@@ -213,9 +226,11 @@ void IRC::names(Client& client) {
                 channels.get_users(tmp.second[i]);
             if (tmp1.first) {
                 for (size_t j = 0; j < tmp1.second.size(); j++) {
-                    if (channels.is_admin(tmp.second[i], tmp1.second[j]))
-                        msg += "@";
-                    msg += tmp1.second[j] + " ";
+                    if (!_nickname_pool[tmp1.second[j]]->get_is_invisible()) {
+                        if (channels.is_admin(tmp.second[i], tmp1.second[j]))
+                            msg += "@";
+                        msg += tmp1.second[j] + " ";
+                    }
                 }
             }
             msg += "\r\n";

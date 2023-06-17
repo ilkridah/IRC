@@ -46,10 +46,11 @@ std::vector<std::string> Parser::parse_join(std::string::iterator it,
 }
 
 std::vector<std::string> Parser::parse_all(std::string::iterator it,
-                                            std::string::iterator end, std::string str) {
+                                           std::string::iterator end,
+                                           std::string str) {
     if (it == end)
         throw IRCException::ERR_NEEDMOREPARAMS(str);
-      std::vector<std::string> args;
+    std::vector<std::string> args;
     if (*it == '#') {
         std::pair<std::string, std::string::iterator> p;
         while (it != end) {
@@ -57,8 +58,7 @@ std::vector<std::string> Parser::parse_all(std::string::iterator it,
             args.push_back(p.first);
             it = p.second;
         }
-    }
-    else
+    } else
         throw IRCException::ERR_NEEDMOREPARAMS(str);
     return args;
 }
@@ -75,8 +75,15 @@ std::vector<std::string> Parser::parse_mode(std::string::iterator it,
             args.push_back(p.first);
             it = p.second;
         }
+    } else {
+        std::pair<std::string, std::string::iterator> p;
+        while (it != end) {
+            p = parse_argument(it, end);
+            args.push_back(p.first);
+            it = p.second;
+        }
     }
-    if(args.size() < 2)
+    if (args.size() < 2)
         throw IRCException::ERR_NEEDMOREPARAMS("MODE");
     return args;
 }
@@ -100,11 +107,12 @@ std::vector<std::string> Parser::parse_topic(std::string::iterator it,
     return args;
 }
 
-std::vector<std::pair<std::string, std::string> > Parser::parse_kick(std::string::iterator it,
-                                            std::string::iterator end) {
-   std::vector<std::pair<std::string, std::string> > chan_key;
+std::vector<std::pair<std::string, std::string> > Parser::parse_kick(
+    std::string::iterator it,
+    std::string::iterator end) {
+    std::vector<std::pair<std::string, std::string> > chan_key;
     std::vector<std::string> chan;
-    std::vector<std::string> args = parse_all(it,end,"KICK");
+    std::vector<std::string> args = parse_all(it, end, "KICK");
 
     if (args.size() < 2)
         throw IRCException::ERR_NEEDMOREPARAMS("KICK");
@@ -117,18 +125,18 @@ std::vector<std::pair<std::string, std::string> > Parser::parse_kick(std::string
             throw IRCException::ERR_NOSUCHCHANNEL(chan[i]);
         chan_key.push_back(std::make_pair(chan[i], ""));
     }
-        std::vector<std::string> key;
-        if (args[1].find(',') != std::string::npos)
-            key = spliter(args[1], ',');
-        else
-            key.push_back(args[1]);
-        for (size_t i = 0; i < key.size() && key.size() <= chan.size(); i++)
-            chan_key[i].second = key[i];
+    std::vector<std::string> key;
+    if (args[1].find(',') != std::string::npos)
+        key = spliter(args[1], ',');
+    else
+        key.push_back(args[1]);
+    for (size_t i = 0; i < key.size() && key.size() <= chan.size(); i++)
+        chan_key[i].second = key[i];
     return chan_key;
 }
 
 std::vector<std::string> Parser::parse_invite(std::string::iterator it,
-                                            std::string::iterator end) {
+                                              std::string::iterator end) {
     if (it == end)
         throw IRCException::ERR_NEEDMOREPARAMS("INVITE");
     std::vector<std::string> args;
@@ -146,7 +154,7 @@ std::vector<std::string> Parser::parse_invite(std::string::iterator it,
 }
 
 std::vector<std::string> Parser::parse_part(std::string::iterator it,
-                               std::string::iterator end) {
+                                            std::string::iterator end) {
     std::vector<std::string> args = parse_all(it, end, "PART");
     std::vector<std::string> chan;
     if (args[0].find(',') != std::string::npos)

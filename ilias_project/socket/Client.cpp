@@ -2,7 +2,7 @@
 
 
 Client::Client(int fd)
-    : _fd(fd), _buffer(), _nick_name(), _is_pass_valid(){};
+    : _fd(fd), _buffer(), _nick_name(), _is_pass_valid(), _is_invisible(false){};
 
 int Client::read_cmd() {
     char buff[512] = {0};

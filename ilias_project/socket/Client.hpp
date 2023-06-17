@@ -26,6 +26,7 @@ class Client {
     std::string _user_real;
     bool _is_pass_valid;
     bool _is_registered;
+    bool _is_invisible;
     std::vector<std::string> myChannels;
     // int _max_channel;
 
@@ -42,6 +43,9 @@ class Client {
     bool is_nick_set() const { return !_nick_name.empty(); }
     bool is_registered() const { return _is_registered; }
     void set_nick(std::string nick) { _nick_name = nick; }
+    void set_is_invisible() { _is_invisible = true; }
+    void unset_is_invisible() { _is_invisible = false; }
+    bool get_is_invisible() const { return _is_invisible; }
     std::string get_nick() const { return _nick_name; }
 
     bool is_user_set() const { return !_user_name.empty(); }
