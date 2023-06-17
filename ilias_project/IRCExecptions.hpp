@@ -4,6 +4,12 @@
 
 namespace IRCException {
 
+struct ERR_SELFKICK :public std::runtime_error{
+    ERR_SELFKICK(std::string nickname)
+        :std::runtime_error(":irc.1337.com * * " + nickname + " :You cannot kick your self\r\n"){};
+};
+
+
 struct ERR_NOSUCHNICK : public std::runtime_error {
     ERR_NOSUCHNICK(std::string nickname)
         : std::runtime_error(":irc.1337.com 401 * " + nickname + " :No such nick/channel\r\n"){};
@@ -66,7 +72,7 @@ struct ERR_FILEERROR : public std::runtime_error {
                              " :File error doing the operation\r\n"){};
 };
 // Returned when a nickname parameter expected for a
-//   command and isn't found.
+//   command and isn't found. //TODO: fot NICK command
 struct ERR_NONICKNAMEGIVEN : public std::runtime_error {
     ERR_NONICKNAMEGIVEN() : std::runtime_error(":irc.1337.com 431 * :No nickname given\r\n"){};
 };

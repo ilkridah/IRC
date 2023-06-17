@@ -115,6 +115,8 @@ void IRC::part(const Parser::Command& cmd, Client& client) {
     std::vector<std::string>::iterator it = tmp.begin();
     for (; it != tmp.end(); it++) {
         if (channels.does_channel_exist(*it) == true) {
+            if(!channels.is_member(*it, client.get_nick()))
+                throw IRCException::ERR_NOSUCHNICK(client.get_nick());
             channels.remove_user(*it, client.get_nick());
             for(size_t i = 0; i < users.size(); i++)
             _nickname_pool[users[i]]->send(":" + client.get_nick() + "!" + client.get_user() +
@@ -151,24 +153,16 @@ void IRC::kick(const Parser::Command& cmd, Client& client) {
         reason = cmd.args[2];
     for (size_t i = 0; i < cmd.chan_key.size(); i++) {
         if (channels.is_admin(cmd.chan_key[i].first, client.get_nick()) == 1) {
-            channels.remove_user(
-                cmd.chan_key[i].first,
-                _nickname_pool[cmd.chan_key[i].second]->get_nick());
-            channels.remove_user(cmd.chan_key[i].first, cmd.chan_key[i].second);
+            if(!channels.is_member(cmd.chan_key[i].first, cmd.chan_key[i].second))
+                throw IRCException::ERR_NOSUCHNICK(cmd.chan_key[i].second);
+            if(_nickname_pool[cmd.chan_key[i].second] != _nickname_pool[client.get_nick()])
+                channels.remove_user(cmd.chan_key[i].first, cmd.chan_key[i].second);
+            else 
+                throw IRCException::ERR_SELFKICK(client.get_nick());
             _nickname_pool[cmd.chan_key[i].second]->send(
                 ":" + client.get_nick() + "!" + client.get_user() + "@" +
                 client.get_local_host() + " KICK " + cmd.chan_key[i].first +
                 " " + cmd.chan_key[i].second + " :" + reason + "\r\n");
-
-            std::pair<bool, std::vector<std::string> > usersMap =
-                channels.get_users(cmd.chan_key[i].first);
-
-            for (size_t x = 0; x < usersMap.second.size(); x++) {
-                _nickname_pool[usersMap.second[x]]->send(
-                    ":" + client.get_nick() + "!" + client.get_user() + "@" +
-                    client.get_local_host() + " KICK " + cmd.chan_key[i].first +
-                    " " + cmd.chan_key[i].second + " :" + reason + "\r\n");
-            }
         } else {
             throw IRCException::ERR_CHANOPRIVSNEEDED(cmd.chan_key[i].first);
         }
