@@ -60,8 +60,6 @@ void RPL_WELCOME(Client& client, std::string nick) {
 void RPL_PASSNOTICE(Client& client) {
     client.send("Please enter your password to connect to the server!!\r\n");
 }
-void RPL_YOUREOPER(Client& client) {
-    client.send(":irc.1337.com 381 :You are now an IRC operator\r\n");
-}
+
 
 }  // namespace IRCReplay

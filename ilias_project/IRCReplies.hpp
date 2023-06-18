@@ -13,5 +13,4 @@ namespace IRCReplay {
     void RPL_INVITING(Client& client, std::string channelname, std::string guest);
     void RPL_WELCOME(Client& client, std::string nick);
     void RPL_PASSNOTICE(Client& client);
-    void RPL_YOUREOPER(Client& client);
 }  // namespace IRCReplay

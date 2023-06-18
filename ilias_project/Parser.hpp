@@ -78,7 +78,7 @@ class Parser {
                                             std::string::iterator end);
     static std::vector<std::string> parse_all(std::string::iterator it,
                                             std::string::iterator end, std::string str);
-    std::string parse_names(std::string::iterator it,
+    static std::string parse_names(std::string::iterator it,
                                 std::string::iterator end);
 
     
