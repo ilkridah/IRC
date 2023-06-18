@@ -41,7 +41,7 @@ void IRC::mode(std::vector<std::string> args, Client& client) {
         } else
             throw IRCException::ERR_NOSUCHNICK(args[0]);
     }
-    client.send(IRCReplay::RPL_mode(args[1], args[0]));
+    client.send(IRCReplies::RPL_mode(args[1], args[0]));
 }
 
 void IRC::join(Client& client, const Parser::Command& cmd) {
@@ -53,9 +53,9 @@ void IRC::join(Client& client, const Parser::Command& cmd) {
         channels.add_user(cmd.chan_key[i].first, client.get_nick(),
                           cmd.chan_key[i].second);
         if (!channels.gimmi_topic(cmd.chan_key[i].first).empty())
-            IRCReplay::RPL_TOPIC(client,
+            IRCReplies::RPL_TOPIC(client,
                                  channels.get_channel(cmd.chan_key[i].first));
-        IRCReplay::RPL_NAMREPLY(client, cmd.chan_key[i].first, channels);
+        IRCReplies::RPL_NAMREPLY(client, cmd.chan_key[i].first, channels);
     }
 }
 
@@ -113,9 +113,9 @@ void IRC::topic(Client& client, const Parser::Command& cmd) {
             channels.set_topic(cmd.args[0], cmd.args[1]);
     }
     if (channels.gimmi_topic(cmd.args[0]).empty())
-        IRCReplay::RPL_NOTOPIC(client, channels.get_channel(cmd.args[0]));
+        IRCReplies::RPL_NOTOPIC(client, channels.get_channel(cmd.args[0]));
     else
-        IRCReplay::RPL_TOPIC(client, channels.get_channel(cmd.args[0]));
+        IRCReplies::RPL_TOPIC(client, channels.get_channel(cmd.args[0]));
 }
 
 void IRC::part(const Parser::Command& cmd, Client& client) {
@@ -152,7 +152,7 @@ void IRC::invite(const Parser::Command& cmd, Client& client) {
             ":" + client.get_nick() + "!" + client.get_user() + "@" +
             client.get_local_host() + " INVITE " + cmd.args[0] + " " +
             cmd.args[1] + "\r\n");
-        IRCReplay::RPL_INVITING(client, cmd.args[1], cmd.args[0]);
+        IRCReplies::RPL_INVITING(client, cmd.args[1], cmd.args[0]);
         channels.set_is_invited(cmd.args[1], cmd.args[0], true);
     } else
         throw IRCException::ERR_NOSUCHNICK(cmd.args[0]);

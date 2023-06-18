@@ -8,7 +8,7 @@ void IRC::authentification(Client& client, const Parser::Command& cmd) {
         throw IRCException::ERR_PASSWDMISMATCH();
     }
     if (!client.is_pass_valid()){
-        IRCReplay::RPL_PASSNOTICE(client);
+        IRCReplies::RPL_PASSNOTICE(client);
         return;}
     if (cmd.ath == Parser::NICK) {
         if (_nickname_pool.find(cmd.args[0]) == _nickname_pool.end()) {

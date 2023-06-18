@@ -42,7 +42,7 @@ void IRC::handle_client(int fd) {
         if (!client.is_registered() && client.is_pass_valid() &&
             client.is_nick_set() && client.is_user_set()) {
             client.set_registered();
-            IRCReplay::RPL_WELCOME(client, client.get_local_host());
+            IRCReplies::RPL_WELCOME(client, client.get_local_host());
         }
         if (cmd.ath == Parser::NOT_REGISTRED)
             exec_command(client, cmd);

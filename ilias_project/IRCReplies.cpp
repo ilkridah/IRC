@@ -1,6 +1,6 @@
 #include "IRCReplies.hpp"
 
-namespace IRCReplay {
+namespace IRCReplies {
 
 void RPL_TOPIC(Client& client, Channel const& channel) {
     client.send(":" + client.get_nick() + "!" + client.get_user() + "@" +
@@ -62,4 +62,4 @@ void RPL_PASSNOTICE(Client& client) {
 }
 
 
-}  // namespace IRCReplay
+}  // namespace IRCReplies

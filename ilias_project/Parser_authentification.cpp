@@ -31,7 +31,7 @@ void Parser::check_nick_rules(std::string str) {
 std::string Parser::parse_nick(std::string::iterator it,
                                std::string::iterator end) {
     if (it == end)
-        throw IRCException::ERR_NEEDMOREPARAMS("NICK");
+        throw IRCException::ERR_NONICKNAMEGIVEN();
     std::pair<std::string, std::string::iterator> p =
             parse_argument(it, end);
         Parser::check_nick_rules(p.first);
