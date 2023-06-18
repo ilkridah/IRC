@@ -36,7 +36,7 @@ void RPL_NAMREPLY(Client& client,
     }
 
     client.send("\r\n");
-    client.send(":irc.example.com 366 " + client.get_nick() + " " +
+    client.send(":irc.1337.com 366 " + client.get_nick() + " " +
                 channelname + " :End of /NAMES list.\r\n");
 }
 
