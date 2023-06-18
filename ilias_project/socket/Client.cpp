@@ -49,20 +49,6 @@ int Client::get_fd() const {
     return _fd;
 }
 
-
-// std::vector<std::string> Client::get_myChannsList() {
-//     return myChannels;
-// }
-
-void Client::remove_channel(std::string const& Channelname)
-{
-   std::vector<std::string>::iterator it = find(myChannels.begin(), myChannels.end(), Channelname);
-   if (it != myChannels.end())
-        myChannels.erase(it);
-    else
-        throw IRCException::ERR_NOTONCHANNEL(Channelname);
-}
-
 std::string Client::get_local_host() {
     char hostname[256];
     if (gethostname(hostname, sizeof(hostname)) == 0)

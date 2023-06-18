@@ -13,7 +13,6 @@
 #include "Client.hpp"
 #include "Poll.hpp"
 
-#define MAX_CHANNEL 20
 
 class Client {
     int _fd;
@@ -28,7 +27,6 @@ class Client {
     bool _is_registered;
     bool _is_invisible;
     std::vector<std::string> myChannels;
-    // int _max_channel;
 
    public:
     Client(int fd);
@@ -73,8 +71,7 @@ class Client {
     std::string get_local_host() const { return _local_host; }
     std::string get_host() const { return _user_host; }
 
-    void remove_channel(std::string const& Channelname);
-    std::vector<std::string> get_myChannels() const { return myChannels; }
+
     std::string get_local_host();
     ~Client();
 };
