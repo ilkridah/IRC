@@ -53,14 +53,14 @@ Parser::Command Parser::operator()(std::string str) {
         cmd.args = parse_part(p.second, str.end());
     } else if (to_upper(p.first) == "KICK") {
         cmd.command = KICK;
-        cmd.args = parse_all(p.second, str.end(),"KICK");
+        cmd.args = parse_all(p.second, str.end(), "KICK");
         cmd.chan_key = parse_kick(p.second, str.end());
     } else if (to_upper(p.first) == "INVITE") {
         cmd.command = INVITE;
         cmd.args = parse_invite(p.second, str.end());
     } else if (to_upper(p.first) == "/WEATHER") {
         cmd.command = WEATHER;
-        cmd.args = parse_invite(p.second, str.end());
+        cmd.args = parse_api(p.second, str.end());
     } else if (to_upper(p.first) == "NAMES") {
         cmd.command = NAMES;
         cmd.args.push_back(parse_names(p.second, str.end()));
@@ -72,22 +72,30 @@ Parser::Command Parser::operator()(std::string str) {
 std::vector<std::string> Parser::parse_privmsg(std::string::iterator it,
                                                std::string::iterator end) {
     std::vector<std::string> args;
+    std::vector<std::string> tmp;
     if (it == end)
-        throw IRCException::ERR_NEEDMOREPARAMS("PRIVMSG");
+        throw IRCException::ERR_NORECIPIENT("PRIVMSG");
     while (true) {
         std::pair<std::string, std::string::iterator> p =
             parse_argument(it, end);
-        args.push_back(p.first);
+        tmp.push_back(p.first);
         it = p.second;
         if (p.second == end)
             break;
     }
-    if (args.size() < 2)
+    if (tmp[0].find(",")) {
+        args = spliter(tmp[0], ',');
+        args.push_back(tmp.back());
+    }
+    if (tmp.size() == 1)
+        throw IRCException::ERR_NOTEXTTOSEND("PRIVMSG");
+    if (tmp.size() != 2)
         throw IRCException::ERR_NEEDMOREPARAMS("PRIVMSG");
     return args;
 }
 
-std::string Parser::parse_quit(std::string::iterator it, std::string::iterator end) {
+std::string Parser::parse_quit(std::string::iterator it,
+                               std::string::iterator end) {
     try {
         return parse_argument(it, end).first;
     } catch (const std::exception&) {

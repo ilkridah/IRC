@@ -54,37 +54,37 @@ void IRC::join(Client& client, const Parser::Command& cmd) {
                           cmd.chan_key[i].second);
         if (!channels.gimmi_topic(cmd.chan_key[i].first).empty())
             IRCReplies::RPL_TOPIC(client,
-                                 channels.get_channel(cmd.chan_key[i].first));
+                                  channels.get_channel(cmd.chan_key[i].first));
         IRCReplies::RPL_NAMREPLY(client, cmd.chan_key[i].first, channels);
     }
 }
 
 void IRC::privMessage(Client& client, const Parser::Command& cmd) {
     std::string msg = cmd.args.back();
-    if (cmd.args.size() > 2)
-        throw IRCException::ERR_TOOMANYTARGETS("targets");
-    if (cmd.args[0][0] == '#') {
-        std::pair<bool, std::vector<std::string> > res =
-            channels.get_users(cmd.args[0]);
-        if (res.first) {
-            std::vector<std::string> const& users = res.second;
-            broadcastMessage(client, cmd.args[0],
-                             ":" + client.get_nick() + "!~" +
-                                 client.get_user() + "@" +
-                                 client.get_local_host() + " PRIVMSG ",
-                             msg, users);
-        } else
-            throw IRCException::ERR_CANNOTSENDTOCHAN(cmd.args[0]);
-    } else {
-        std::map<std::string, Client*>::iterator it =
-            _nickname_pool.find(cmd.args[0]);
-        if (it != _nickname_pool.end()) {
-            Client& target = *it->second;
-            target.send(":" + client.get_nick() + "!~" + client.get_user() +
-                        "@" + client.get_local_host() + " PRIVMSG " +
-                        cmd.args[0] + " :" + msg + "\r\n");
-        } else
-            throw IRCException::ERR_NOSUCHNICK(cmd.args[0]);
+    for (size_t i = 0; i < cmd.args.size() - 1; i++) {
+        if (cmd.args[i][0] == '#') {
+            std::pair<bool, std::vector<std::string> > res =
+                channels.get_users(cmd.args[i]);
+            if (res.first) {
+                std::vector<std::string> const& users = res.second;
+                broadcastMessage(client, cmd.args[i],
+                                 ":" + client.get_nick() + "!~" +
+                                     client.get_user() + "@" +
+                                     client.get_local_host() + " PRIVMSG ",
+                                 msg, users);
+            } else
+                throw IRCException::ERR_CANNOTSENDTOCHAN(cmd.args[0]);
+        } else {
+            std::map<std::string, Client*>::iterator it =
+                _nickname_pool.find(cmd.args[i]);
+            if (it != _nickname_pool.end()) {
+                Client& target = *it->second;
+                target.send(":" + client.get_nick() + "!~" + client.get_user() +
+                            "@" + client.get_local_host() + " PRIVMSG " +
+                            cmd.args[i] + " :" + msg + "\r\n");
+            } else
+                throw IRCException::ERR_NOSUCHNICK(cmd.args[i]);
+        }
     }
 }
 

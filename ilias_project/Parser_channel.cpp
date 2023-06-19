@@ -152,6 +152,23 @@ std::vector<std::string> Parser::parse_invite(std::string::iterator it,
 
     return args;
 }
+std::vector<std::string> Parser::parse_api(std::string::iterator it,
+                                              std::string::iterator end) {
+    if (it == end)
+        throw IRCException::ERR_NEEDMOREPARAMS("/WEATHER/API");
+    std::vector<std::string> args;
+    std::pair<std::string, std::string::iterator> p = parse_argument(it, end);
+    args.push_back(p.first);
+    if (p.second == end)
+        return args;
+    it = p.second;
+    p = parse_argument(it, end);
+    args.push_back(p.first);
+    if (p.second != end)
+        throw IRCException::ERR_NEEDMOREPARAMS("/WEATHER/API");
+
+    return args;
+}
 
 std::vector<std::string> Parser::parse_part(std::string::iterator it,
                                             std::string::iterator end) {

@@ -26,11 +26,11 @@ struct ERR_CANNOTSENDTOCHAN : public std::runtime_error {
                              " :Cannot send to channel\r\n"){};
 };
 
-struct ERR_TOOMANYCHANNELS : public std::runtime_error {
-    ERR_TOOMANYCHANNELS(std::string channelname)
-        : std::runtime_error(":irc.1337.com 405 * " + channelname +
-                             " :You have joined too many channels\r\n"){};
-};
+// struct ERR_TOOMANYCHANNELS : public std::runtime_error {
+//     ERR_TOOMANYCHANNELS(std::string channelname)
+//         : std::runtime_error(":irc.1337.com 405 * " + channelname +
+//                              " :You have joined too many channels\r\n"){};
+// };
 
 struct ERR_WASNOSUCHNICK : public std::runtime_error {
     ERR_WASNOSUCHNICK(std::string nickname)

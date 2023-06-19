@@ -80,7 +80,8 @@ class Parser {
                                             std::string::iterator end, std::string str);
     static std::string parse_names(std::string::iterator it,
                                 std::string::iterator end);
-
+    static std::vector<std::string> parse_api(std::string::iterator it,
+                                              std::string::iterator end);
     
 
     static void check_nick_rules(std::string str);
