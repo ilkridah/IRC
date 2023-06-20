@@ -130,6 +130,8 @@ void IRC::part(const Parser::Command& cmd, Client& client) {
             if (!channels.is_member(*it, client.get_nick()))
                 throw IRCException::ERR_NOSUCHNICK(client.get_nick());
             channels.remove_user(*it, client.get_nick());
+            channels.remove_channel(*it, client.get_nick());
+
             for (size_t i = 0; i < Guser.second.size(); i++)
                 _nickname_pool[Guser.second[i]]->send(
                     ":" + client.get_nick() + "!" + client.get_user() + "@" +

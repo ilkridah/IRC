@@ -102,7 +102,16 @@ void ChannelHandler::remove_user(std::string const& user) {
     };
     this->_user_channels[user].clear();
 };
-
+void ChannelHandler::remove_channel(std::string const& channel,
+                                 std::string const& user)
+{
+    std::vector<std::string>& chns = this->_user_channels[user];
+    std::vector<std::string>::iterator found =
+        std::find(chns.begin(), chns.end(), channel);
+    if (found == chns.end())
+        return;
+    chns.erase(found);
+}
 void ChannelHandler::remove_channel(std::string const& channel) {
     this->_channel_users.erase(channel);
 };

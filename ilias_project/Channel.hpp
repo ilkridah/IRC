@@ -64,6 +64,8 @@ class ChannelHandler {
     void remove_user(std::string const& channel, std::string const& user);
     void remove_user(std::string const& user);
     void remove_channel(std::string const& channel);
+    void remove_channel(std::string const& channel,
+                                 std::string const& user);
 
     bool does_channel_exist(std::string const& channel_name) const;
     bool does_user_exist(std::string const& nickname) const;
