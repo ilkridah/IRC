@@ -172,7 +172,7 @@ bool ChannelHandler::is_member(const std::string& channel,
     std::map<std::string, std::vector<std::string> >::iterator res =
         _channel_users.find(channel);
     if (res == _channel_users.end()) {
-        throw IRCException::ERR_USERSDONTMATCH();
+        throw IRCException::ERR_NOSUCHCHANNEL(channel);
     };
     std::vector<std::string> users = res->second;
     for (std::vector<std::string>::iterator it = users.begin();
