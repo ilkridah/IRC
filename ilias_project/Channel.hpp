@@ -82,8 +82,8 @@ class ChannelHandler {
     
 
 
-    void set_invite(std::string const& channel_name);
-    void unset_invite(std::string const& channel_name);
+    void set_invite(std::string const& channel_name,std::string client);
+    void unset_invite(std::string const& channel_name, std::string client);
 
     bool set_limit(std::string const& channel_name, std::string const& limit);
     void unset_limit(std::string const& channel_name);

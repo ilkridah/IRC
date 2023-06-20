@@ -200,16 +200,20 @@ void ChannelHandler::unset_key(std::string& channel_name) {
         throw IRCException::ERR_NOSUCHCHANNEL(channel_name);
 }
 
-void ChannelHandler::set_invite(std::string const& channel_name) {
+void ChannelHandler::set_invite(std::string const& channel_name, std::string client){
     if (!does_channel_exist(channel_name))
         throw IRCException::ERR_NOSUCHCHANNEL(channel_name);
-    if (is_admin(channel_name, _user_channels[channel_name][0]))
+    if (!is_admin(channel_name, client))
         throw IRCException::ERR_CHANOPRIVSNEEDED(channel_name);
     std::map<std::string, Channel>::iterator it = _channels.find(channel_name);
     if (it != _channels.end())
         it->second.InviteOnly = true;
 }
-void ChannelHandler::unset_invite(std::string const& channel_name) {
+void ChannelHandler::unset_invite(std::string const& channel_name,std::string client) {
+      if (!does_channel_exist(channel_name))
+        throw IRCException::ERR_NOSUCHCHANNEL(channel_name);
+    if (!is_admin(channel_name, client))
+        throw IRCException::ERR_CHANOPRIVSNEEDED(channel_name);
     std::map<std::string, Channel>::iterator it = _channels.find(channel_name);
     if (it != _channels.end())
         it->second.InviteOnly = false;

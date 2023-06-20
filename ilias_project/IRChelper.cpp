@@ -14,9 +14,9 @@ void IRC::mode(std::vector<std::string> args, Client& client) {
             } else if (args[1] == "-k" && args.size() == 2)
                 channels.unset_key(args[0]);
             else if (args[1] == "+i" && args.size() == 2)
-                channels.set_invite(args[0]);
+                channels.set_invite(args[0],client.get_nick());
             else if (args[1] == "-i" && args.size() == 2)
-                channels.unset_invite(args[0]);
+                channels.unset_invite(args[0],client.get_nick());
             else if (args[1] == "+l" && args.size() == 3) {
                 if (!channels.set_limit(args[0], args[2]))
                     throw ::IRCException::ERR_UNKNOWNMODE(args[1]);
