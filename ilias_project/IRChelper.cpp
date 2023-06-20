@@ -105,17 +105,23 @@ void IRC::topic(Client& client, const Parser::Command& cmd) {
     }
     if (cmd.args.size() > 1) {
         if (channels.get_channel(cmd.args[0]).rest_topic == true)
-            if (channels.is_admin(cmd.args[0], client.get_nick()) == true)
-                channels.set_topic(cmd.args[0], cmd.args[1]);
+            if(channels.is_member(cmd.args[0],client.get_nick()))
+                if (channels.is_admin(cmd.args[0], client.get_nick()) == true)
+                    channels.set_topic(cmd.args[0], cmd.args[1]);
+                else
+                    throw IRCException::ERR_CHANOPRIVSNEEDED(cmd.args[0]);
             else
-                throw IRCException::ERR_CHANOPRIVSNEEDED(cmd.args[0]);
+                throw IRCException::ERR_NOTONCHANNEL(cmd.args[0]);
         else
             channels.set_topic(cmd.args[0], cmd.args[1]);
     }
-    if (channels.gimmi_topic(cmd.args[0]).empty())
-        IRCReplies::RPL_NOTOPIC(client, channels.get_channel(cmd.args[0]));
+    if (channels.is_member(cmd.args[0],client.get_nick()))
+        if (channels.gimmi_topic(cmd.args[0]).empty())
+            IRCReplies::RPL_NOTOPIC(client, channels.get_channel(cmd.args[0]));
+        else
+            IRCReplies::RPL_TOPIC(client, channels.get_channel(cmd.args[0]));
     else
-        IRCReplies::RPL_TOPIC(client, channels.get_channel(cmd.args[0]));
+        throw IRCException::ERR_NOTONCHANNEL(cmd.args[0]);
 }
 
 void IRC::part(const Parser::Command& cmd, Client& client) {
