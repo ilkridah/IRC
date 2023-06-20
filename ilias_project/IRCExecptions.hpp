@@ -38,12 +38,6 @@ struct ERR_WASNOSUCHNICK : public std::runtime_error {
                              " :There was no such nickname\r\n"){};
 };
 
-struct ERR_TOOMANYTARGETS : public std::runtime_error {
-    ERR_TOOMANYTARGETS(std::string target)
-        : std::runtime_error(
-               ":irc.1337.com 407 * " + target +
-              " :Too many recipients. Try using a distribution list\r\n"){};
-};
 // for privmsg
 struct ERR_NORECIPIENT : public std::runtime_error {
     ERR_NORECIPIENT(std::string command)
@@ -64,13 +58,6 @@ struct ERR_UNKNOWNCOMMAND : public std::runtime_error {
     ERR_UNKNOWNCOMMAND(std::string command)
         : std::runtime_error(":irc.1337.com 421 * " + command + " :Unknown command\r\n"){};
 };
-// Generic error message used to report a failed file
-//   operation during the processing of a message.
-struct ERR_FILEERROR : public std::runtime_error {
-    ERR_FILEERROR(std::string file)
-        : std::runtime_error(":irc.1337.com 424 * " + file +
-                             " :File error doing the operation\r\n"){};
-};
 // Returned when a nickname parameter expected for a
 //   command and isn't found. //TODO: fot NICK command
 struct ERR_NONICKNAMEGIVEN : public std::runtime_error {
@@ -90,15 +77,6 @@ struct ERR_NICKNAMEINUSE : public std::runtime_error {
     ERR_NICKNAMEINUSE(std::string nickname)
         : std::runtime_error(":irc.1337.com 433 * " + nickname +
                              " :Nickname is already in use\r\n"){};
-};
-// not gonna use it in the end cus its between two servers
-//  Returned by a server to a client when it detects a
-//   nickname collision (registered of a NICK that
-//   already exists by another server).
-struct ERR_NICKCOLLISION : public std::runtime_error {
-    ERR_NICKCOLLISION(std::string nickname)
-        : std::runtime_error(":irc.1337.com 436 * " + nickname +
-                             " :Nickname collision KILL\r\n"){};
 };
 //  - Returned by the server to indicate that the target
 //   user of the command is not on the given channel.
@@ -147,14 +125,6 @@ struct ERR_ALREADYREGISTRED : public std::runtime_error {
     ERR_ALREADYREGISTRED()
         : std::runtime_error(":irc.1337.com 462 * ::You may not reregister\r\n"){};
 };
-// Returned to a client which attempts to register with
-//   a server which does not been setup to allow
-//   connections from the host the attempted connection
-//   is tried.
-struct ERR_NOPERMFORHOST : public std::runtime_error {
-    ERR_NOPERMFORHOST()
-        : std::runtime_error(":irc.1337.com 463 * :Your host isn't among the privileged\r\n"){};
-};
 // Returned to indicate a failed attempt at registering
 //   a connection for which a password was required and
 //   was either not given or incorrect.
@@ -191,24 +161,6 @@ struct ERR_BADCHANNELKEY : public std::runtime_error {
         : std::runtime_error(":irc.1337.com 475 * " + channel +
                              " :Cannot join channel (+k)\r\n"){};
 };
-// should we work with this or the other error?
-//  This error is sent by the server in response to a client's attempt to change
-//  modes on a channel that does not support the requested mode changes. Each
-//  channel in IRC can have its own set of supported modes that can be modified
-//  by channel operators
-struct ERR_NOCHANMODES : public std::runtime_error {
-    ERR_NOCHANMODES(std::string channel)
-        : std::runtime_error(":irc.1337.com 477 * " + channel +
-                             " :Channel doesn't support modes\r\n"){};
-};
-// Any command requiring operator privileges to operate
-//   must return this error to indicate the attempt was
-//   unsuccessful.
-struct ERR_NOPRIVILEGES : public std::runtime_error {
-    ERR_NOPRIVILEGES()
-        : std::runtime_error(
-               ":irc.1337.com 481 * :Permission Denied- You're not an IRC operator\r\n"){};
-};
 //  Any command requiring 'chanop' privileges (such as
 //   MODE messages) must return this error if the client
 //   making the attempt is not a chanop on the specified
@@ -217,34 +169,6 @@ struct ERR_CHANOPRIVSNEEDED : public std::runtime_error {
     ERR_CHANOPRIVSNEEDED(std::string channel)
         : std::runtime_error(":irc.1337.com 482 * " + channel +
                              " :You're not channel operator\r\n"){};
-};
-// not working with this?
-//  This error is sent by the server in response to a client's attempt to
-//  perform an operation on a channel that requires them to be the original
-//  operator (the founder or creator of the channel). The error message
-//  indicates that the client does not have the necessary privileges to perform
-//  the requested operation
-struct ERR_UNIQOPPRIVSNEEDED : public std::runtime_error {
-    ERR_UNIQOPPRIVSNEEDED(std::string channel)
-        : std::runtime_error(":irc.1337.com 485 * " + channel +
-                             " :You're not the original channel operator\r\n"){};
-};
-// If a client sends an OPER message and the server has
-//    not been configured to allow connections from the
-//    client's host as an operator, this error must be
-//    returned
-struct ERR_NOOPERHOST : public std::runtime_error {
-    ERR_NOOPERHOST() : std::runtime_error(":irc.1337.com 491 * :No O-lines for your host\r\n"){};
-};
-
-// This error is sent by the server in response to a client's attempt to perform
-// an operation on a channel that requires channel operator privileges. The
-// error message indicates that the client does not have the necessary
-// privileges to perform the requested action.
-struct ERR_CHANOWNPRIVNEEDED : public std::runtime_error {
-    ERR_CHANOWNPRIVNEEDED(std::string channel)
-        : std::runtime_error(":irc.1337.com 499 * " + channel +
-                             " :You're not the channel owner\r\n"){};
 };
 //- Returned by the server to indicate that a MODE
 //   message was sent with a nickname parameter and that
