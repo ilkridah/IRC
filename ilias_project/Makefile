@@ -15,6 +15,8 @@ SRC				= 	main.cpp \
 					bot.cpp \
 					IRCReplies.cpp \
 					 	
+HEADERS			= ./socket/Socket.hpp IRCExecptions.hpp IRCReplies.hpp Channel.hpp IRC.hpp Parser.hpp\
+					 ./socket/Client.hpp ./socket/Poll.hpp ./socket/Server.hpp ./MainHeader.hpp\
 
 CXX				= c++
 VERSION			= -std=c++98
@@ -31,7 +33,7 @@ run: all
 	echo 5000 pass && \
 	./$(NAME) 5000 pass
 
-$(NAME):		$(OBJ) ./socket/Socket.hpp IRCExecptions.hpp IRCReplies.hpp Channel.hpp IRC.hpp Parser.hpp
+$(NAME):		$(OBJ) $(HEADERS)
 				$(CXX) $(CXXFLAGS) $(OBJ) -o $(NAME) -lcurl
 
 clean:

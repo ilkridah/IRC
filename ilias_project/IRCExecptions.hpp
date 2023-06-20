@@ -171,5 +171,4 @@ struct ERR_USERSDONTMATCH : public std::runtime_error {
     ERR_USERSDONTMATCH()
         : std::runtime_error(":irc.1337.com 502 * :Cannot change mode for other users\r\n"){};
 };
-
 };

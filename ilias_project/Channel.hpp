@@ -68,11 +68,6 @@ class ChannelHandler {
     bool does_channel_exist(std::string const& channel_name) const;
     bool does_user_exist(std::string const& nickname) const;
 
-    void made_channel(std::string const& channel_name);
-    void CreateChannel(const std::string& channel_name,
-                       const std::string& user,
-                       std::string& password);
-    void get_key(std::string const& channel_name, std::string const& key);
     void set_key(std::string const& channel_name, std::string const& key);
     void unset_key(std::string & channel_name);
 
