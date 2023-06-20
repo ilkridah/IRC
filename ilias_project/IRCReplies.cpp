@@ -62,4 +62,4 @@ void RPL_PASSNOTICE(Client& client) {
 }
 
 
-}  // namespace IRCReplies
+} 

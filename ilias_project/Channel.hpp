@@ -36,7 +36,7 @@ class ChannelHandler {
 
    public: 
     ChannelHandler();
-    // Channel  Channel(std::string const& channel_name, std::string const& password);
+ 
     bool is_member(const std::string &channel, const std::string &user);
 
     std::vector<std::string> list_users();
@@ -61,14 +61,13 @@ class ChannelHandler {
                  std::string const& user_name,
                  std::string const& password);
 
-    // void add_channel(std::string const& channel);
     void remove_user(std::string const& channel, std::string const& user);
     void remove_user(std::string const& user);
     void remove_channel(std::string const& channel);
-    ////
+
     bool does_channel_exist(std::string const& channel_name) const;
     bool does_user_exist(std::string const& nickname) const;
-    ////
+
     void made_channel(std::string const& channel_name);
     void CreateChannel(const std::string& channel_name,
                        const std::string& user,
